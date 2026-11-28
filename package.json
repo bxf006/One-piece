@@ -1,0 +1,22 @@
+{
+  "name": "curve-viewer",
+  "version": "2.2.1",
+  "private": true,
+  "description": "离线 Excel/CSV/JSON/TXT/PMSD 多序列曲线查看器",
+  "scripts": {
+    "build": "node build.cjs",
+    "test": "node --test tests/core.test.cjs tests/config-types.test.cjs tests/defaults.test.cjs tests/config-store.test.cjs tests/preview.test.cjs tests/paste.test.cjs tests/paste-ui.test.cjs tests/data-import.test.cjs tests/plot.test.cjs tests/pmsd.test.cjs tests/excel-import.test.cjs",
+    "test:core": "npm test",
+    "test:legacy-excel": "node --test tests/import.test.cjs",
+    "preview": "node preview.cjs",
+    "package": "node package.cjs",
+    "test:excel": "node --test tests/excel-import.test.cjs"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "fake-indexeddb": "6.2.4",
+    "xml-js": "1.6.11"
+  }
+}

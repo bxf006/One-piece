@@ -1058,11 +1058,19 @@ button.axis-tag{flex-shrink:0;min-height:23px;padding:2px 6px;white-space:nowrap
     const text = JSON.stringify({ schema: 'curve-viewer-bundle', version: 1, type, defaults: C.getDefaults(type), configs: profiles }, null, 2) + '\n';
     parseBundle(text, type); return { filename: FILES[type], text };
   }
-  async function loadCloud(fetcher) {
+  async function loadCloud(fetcher, baseURL) {
     const results = await Promise.all(C.CONFIG_TYPES.map(async type => {
-      const name = FILES[type];
-      const response = await fetcher('./configs/' + name, { cache: 'no-store' });
-      if (!response.ok) throw new Error(`${name} 读取失败（HTTP ${response.status}）。`);
+      const name = FILES[type], relative = './configs/' + name;
+      let address = relative;
+      if (baseURL) { try { address = new URL(relative, baseURL).href; } catch { /* Keep the original relative address for diagnostics. */ } }
+      let response;
+      try { response = await fetcher(relative, { cache: 'no-store' }); }
+      catch (cause) {
+        const reason = cause?.name === 'AbortError' ? '请求已取消或超时' : `网络请求失败（${cause?.message || '无法连接'}）`;
+        const error = new Error(`${name} ${reason}。请求地址：${address}`, { cause });
+        error.code = 'CLOUD_REQUEST_FAILED'; error.url = address; throw error;
+      }
+      if (!response.ok) throw new Error(`${name} 读取失败（HTTP ${response.status}）。请求地址：${address}`);
       try { return parseCloudDocument(await response.text(), type); } catch (error) { throw new Error(`${name}：${error.message}`); }
     }));
     return { configs: results.flatMap(document => document.configs), defaults: Object.fromEntries(results.map(document => [document.type, document.defaults])) };
@@ -1252,15 +1260,16 @@ button.axis-tag{flex-shrink:0;min-height:23px;padding:2px 6px;white-space:nowrap
   async function refreshCloud(initial = false) {
     if (!initial) { await configsReady; if (state.busy || configLocked()) return; configBusy(true); }
     try {
+      if (window.location?.protocol === 'file:') throw new Error('当前通过 file:// 本地文件打开，浏览器不允许自动读取相邻 JSON。请将 index.html、vendor 和 configs 部署到静态网站，通过 HTTP/HTTPS 网址访问');
       const controller = new AbortController(), timer = setTimeout(() => controller.abort(), 8000);
       let profiles;
-      try { profiles = await R.loadCloud((url, options) => window.fetch(url, { ...options, signal: controller.signal })); }
+      try { profiles = await R.loadCloud((url, options) => window.fetch(url, { ...options, signal: controller.signal }), document.baseURI || window.location?.href); }
       finally { clearTimeout(timer); }
       C.configureDefaults(profiles.defaults); state.cloudConfigs = profiles.configs; reconcileProfiles('cloud');
       if (!initial && !state.data) restoreChoices();
       state.cloudMessage = `已读取默认值及 ${profiles.configs.length} 项云端配置 · 只读`;
       if (!initial) notify('云端配置已刷新；点击对应配置应用。');
-    } catch (error) { state.cloudMessage = `云端读取失败：${error.message}；已保留原列表。`; if (!initial) notify(state.cloudMessage, true); }
+    } catch (error) { state.cloudMessage = `云端读取失败：${error.message}；${C.defaultsReady ? '已保留原默认值和列表' : '默认配置尚未载入'}。`; console.error('[曲线查看：云端配置读取]', error); if (!initial) notify(state.cloudMessage, true); }
     finally { if (!initial) configBusy(false); renderConfigs(); }
   }
   async function initializeConfigs() {
