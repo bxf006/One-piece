@@ -3,7 +3,7 @@ const assert = require('node:assert/strict');
 const { IDBFactory } = require('fake-indexeddb');
 const R = require('../src/config-store.js');
 const C = require('../src/core.js');
-const selection = (name, value = '温度') => ({ schema:'curve-viewer',version:2,type:'selection',name,selectedSeries:[{name:value,occurrence:1}] });
+const selection = (name, value = '温度') => ({ schema:'curve-viewer',version:2,type:'selection',name,selectedSeries:[{name:value,occurrence:1}],seriesAxes:[] });
 const axes = name => C.validateProfile({schema:'curve-viewer',version:2,type:'axes',name,timeMode:'auto'});
 const regex = name => ({schema:'curve-viewer',version:2,type:'regex',name,headerRule:C.validateHeaderRule()});
 const document = (type, configs = []) => ({schema:'curve-viewer-bundle',version:1,type,defaults:C.getDefaults(type),configs});
@@ -122,4 +122,41 @@ test('relative cloud requests resolve next to the page at website root or a nest
     });
     assert.equal(paths.length, 3); assert.equal(profiles.configs[0].name, '网站曲线');
   }
+});
+
+test('existing IndexedDB records migrate axis assignments once and retain the active selection across reopen', async () => {
+  const idb = new IDBFactory(), store = R.create(idb), db = await store.open();
+  const seriesAxes = [{name:'压力',occurrence:1,sourceName:'压力',sourceOccurrence:1,axisId:'auto'}];
+  const oldAxes = {...axes('坐标'),seriesAxes}, oldSelection = selection('曲线');delete oldSelection.seriesAxes;
+  await new Promise((resolve,reject)=>{
+    const tx=db.transaction(['profiles','settings'],'readwrite');
+    for(const [index,config] of [oldAxes,oldSelection].entries())tx.objectStore('profiles').put({id:R.keyOf(config),config,order:index+1,updatedAt:123});
+    for(const [type,name] of [['axes','坐标'],['selection','曲线']])tx.objectStore('settings').put({key:'last.'+type,value:{source:'local',name}});
+    tx.objectStore('settings').put({key:'legacy-migrated',value:true});
+    tx.oncomplete=resolve;tx.onabort=()=>reject(tx.error);
+  });
+  const migrated=await store.snapshot(), active=migrated.configs.find(c=>c.type==='selection'&&c.name==='曲线');
+  assert.deepEqual(active.selectedSeries,oldSelection.selectedSeries);assert.deepEqual(active.seriesAxes,seriesAxes);
+  assert.equal(migrated.configs.find(c=>c.type==='axes').seriesAxes,undefined);
+  assert.deepEqual(migrated.last.selection,{source:'local',name:'曲线'});
+  const raw=await new Promise((resolve,reject)=>{const tx=db.transaction('profiles','readonly'),request=tx.objectStore('profiles').getAll();tx.oncomplete=()=>resolve(request.result);tx.onabort=()=>reject(tx.error);});
+  assert.ok(raw.every(row=>row.config.type!=='axes'||!Object.hasOwn(row.config,'seriesAxes')));
+  await store.putMany([{...active,seriesAxes:[]}]);
+  await store.remove('selection','坐标（旧坐标分配）');await store.close();
+  const reopened=R.create(idb), after=await reopened.snapshot();
+  assert.equal(after.configs.length,2);assert.deepEqual(after.configs.find(c=>c.type==='selection').seriesAxes,[]);
+  await reopened.close();
+});
+
+test('old cloud axes and defaults move to selection while exports contain no axis-owned series entries', async () => {
+  const seriesAxes=[{name:'压力',occurrence:1,axisId:'auto'}], oldSelection=selection('设备');delete oldSelection.seriesAxes;
+  const docs=Object.fromEntries(C.CONFIG_TYPES.map(type=>[type,document(type)]));
+  docs.axes.defaults.seriesAxes=seriesAxes;delete docs.selection.defaults.seriesAxes;
+  docs.axes.configs=[{...axes('设备'),seriesAxes}];docs.selection.configs=[oldSelection];
+  const loaded=await R.loadCloud(async url=>({ok:true,status:200,text:async()=>JSON.stringify(docs[fileType(url)])}));
+  assert.equal(loaded.configs.length,2);assert.equal(loaded.defaults.axes.seriesAxes,undefined);assert.deepEqual(loaded.defaults.selection.seriesAxes,seriesAxes);
+  const migrated=loaded.configs.find(c=>c.type==='selection');assert.deepEqual(migrated.selectedSeries,oldSelection.selectedSeries);assert.deepEqual(migrated.seriesAxes,seriesAxes);
+  assert.ok(!R.bundle(loaded.configs,'axes').text.includes('seriesAxes'));
+  assert.deepEqual(JSON.parse(R.bundle(loaded.configs,'selection').text).configs[0].seriesAxes,seriesAxes);
+  const imported=R.parseBundle(JSON.stringify(docs.axes));assert.equal(imported[1].name,'设备（旧坐标分配）');assert.deepEqual(imported[1].selectedSeries,[]);
 });

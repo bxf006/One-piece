@@ -19,15 +19,10 @@
     const defaults = document ? C.validateDefaults(value.type, value.defaults) : null;
     const entries = document ? value.configs : Array.isArray(value) ? value : [value];
     if (entries.length > 1000) throw new Error('单个配置文件最多支持 1,000 项配置。');
-    const configs = entries.flatMap(C.splitConfig), seen = new Set();
-    for (const config of configs) {
-      const type = expectedType || (document ? value.type : null);
-      if (type && config.type !== type) throw new Error(`${FILES[type]} 只能包含 ${type} 类型的配置。`);
-      const key = keyOf(config);
-      if (seen.has(key)) throw new Error(`同类配置名称重复：${config.name}`);
-      seen.add(key);
-    }
-    return { configs, defaults, type: document ? value.type : expectedType };
+    const type = expectedType || (document ? value.type : null);
+    for (const entry of entries) if (type && entry?.type !== type) throw new Error(`${FILES[type]} 只能包含 ${type} 类型的配置。`);
+    const configs = C.migrateProfiles(entries);
+    return { configs, defaults, type: document ? value.type : expectedType, rawConfigs: entries, rawDefaults: document ? value.defaults : null };
   }
   function parseBundle(text, expectedType) { return decodeBundle(text, expectedType).configs; }
   function parseCloudDocument(text, type) {
@@ -56,10 +51,15 @@
       if (!response.ok) throw new Error(`${name} 读取失败（HTTP ${response.status}）。请求地址：${address}`);
       try { return parseCloudDocument(await response.text(), type); } catch (error) { throw new Error(`${name}：${error.message}`); }
     }));
-    return { configs: results.flatMap(document => document.configs), defaults: Object.fromEntries(results.map(document => [document.type, document.defaults])) };
+    const defaults = Object.fromEntries(results.map(document => [document.type, document.defaults]));
+    const oldAxes = results.find(document => document.type === 'axes').rawDefaults, selection = results.find(document => document.type === 'selection').rawDefaults;
+    if (!Object.hasOwn(selection, 'seriesAxes') && oldAxes.seriesAxes !== undefined) {
+      defaults.selection.seriesAxes = C.validateProfile({ schema: 'curve-viewer', version: 2, type: 'selection', name: 'defaults', selectedSeries: [], seriesAxes: oldAxes.seriesAxes }).seriesAxes;
+    }
+    return { configs: C.migrateProfiles(results.flatMap(document => document.rawConfigs)), defaults };
   }
   function create(indexedDB, name = DATABASE) {
-    let connection;
+    let connection, ownershipMigration;
     function open() {
       if (connection) return connection;
       connection = new Promise((resolve, reject) => {
@@ -96,7 +96,31 @@
         catch (error) { tx.abort(); reject(error); }
       });
     }
+    function upgradeStoredProfiles() {
+      if (!ownershipMigration) ownershipMigration = transaction('readwrite', (profiles, settings, tx) => {
+        const marker = settings.get('series-axes-in-selection');
+        marker.onsuccess = () => {
+          if (marker.result) return;
+          const a = profiles.getAll(), b = settings.getAll();
+          b.onsuccess = () => {
+            try {
+              const records = a.result.sort((x, y) => (x.order || 0) - (y.order || 0)), last = {};
+              for (const entry of b.result) if (entry.key.startsWith('last.')) last[entry.key.slice(5)] = reference(entry.value);
+              const configs = C.migrateProfiles(records.map(entry => entry.config), last), previous = new Map(records.map(entry => [entry.id, entry]));
+              let order = Math.max(0, ...records.map(entry => entry.order || 0)) + 1;
+              for (const config of configs) {
+                const id = keyOf(config), old = previous.get(id);
+                profiles.put({ id, config, order: old?.order || order++, updatedAt: old?.updatedAt || Date.now() });
+              }
+              settings.put({ key: 'series-axes-in-selection', value: true });
+            } catch { tx.abort(); }
+          };
+        };
+      }).catch(error => { ownershipMigration = null; throw error; });
+      return ownershipMigration;
+    }
     async function snapshot() {
+      await upgradeStoredProfiles();
       return transaction('readonly', (profiles, settings) => {
         const a = profiles.getAll(), b = settings.getAll();
         return () => {
@@ -107,7 +131,8 @@
       });
     }
     async function migrate(configs = [], last = {}) {
-      const validated = configs.map(C.validateProfile);
+      const validated = C.migrateProfiles(configs, Object.fromEntries(Object.entries(last).filter(([, name]) => name).map(([type, name]) => [type, { source: 'local', name }])));
+      await upgradeStoredProfiles();
       return transaction('readwrite', (profiles, settings) => {
         const marker = settings.get('legacy-migrated');
         marker.onsuccess = () => {
@@ -128,6 +153,7 @@
     }
     async function putMany(configs, choose = false) {
       const validated = configs.map(C.validateProfile);
+      await upgradeStoredProfiles();
       return transaction('readwrite', (profiles, settings) => {
         const existing = profiles.getAll();
         existing.onsuccess = () => {
@@ -143,6 +169,7 @@
     }
     async function remove(type, name) {
       if (!C.CONFIG_TYPES.includes(type)) throw new Error('配置类型无效。');
+      await upgradeStoredProfiles();
       return transaction('readwrite', (profiles, settings) => {
         profiles.delete(keyOf({ type, name }));
         const key = 'last.' + type, current = settings.get(key);
@@ -152,6 +179,7 @@
     async function select(type, value) {
       if (!C.CONFIG_TYPES.includes(type)) throw new Error('配置类型无效。');
       const ref = reference(value);
+      await upgradeStoredProfiles();
       return transaction('readwrite', (profiles, settings, tx) => {
         if (ref.source === 'local') {
           const config = profiles.get(keyOf({ type, name: ref.name }));

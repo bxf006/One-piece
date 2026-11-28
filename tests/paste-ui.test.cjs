@@ -30,7 +30,7 @@ async function setup(configs = [], lastConfigName = '', options = {}) {
   let focused;
   const stored = new Map([['curve-explorer.configs.v1', JSON.stringify(configs)], ['curve-explorer.last-config.v1', lastConfigName]]);
   if (configs.some(c => c.version === 2) || typeof lastConfigName === 'object') {
-    stored.set('curve-explorer.configs.v2', JSON.stringify(configs.flatMap(C.splitConfig)));
+    stored.set('curve-explorer.configs.v2', JSON.stringify(configs));
     stored.set('curve-explorer.last-config.v2', JSON.stringify(typeof lastConfigName === 'object' ? lastConfigName : { selection: lastConfigName }));
   }
   const downloads = [], downloadNames = [];
@@ -181,7 +181,7 @@ test('static website startup failure preserves local curves and retry plus page 
 test('JSON defaults control initial selection, axes and reset actions and export with local profiles', async () => {
   const documents=Object.fromEntries(C.CONFIG_TYPES.map(type=>[type,JSON.parse(fs.readFileSync(path.join(__dirname,'../configs',type+'.json'),'utf8'))]));
   documents.axes.defaults.axisRegions.medium={start:5,end:55};documents.axes.defaults.axisLimits.medium={min:-10,max:60};
-  documents.axes.defaults.seriesAxes=[{name:'温度',occurrence:1,axisId:'medium'}];
+  documents.selection.defaults.seriesAxes=[{name:'温度',occurrence:1,axisId:'medium'}];
   documents.regex.defaults.headerRule={enabled:true,pattern:'^(.+)$',flags:'',replacement:'R_$1'};
   documents.selection.defaults.selectedSeries=[{name:'温度',occurrence:1}];documents.selection.defaults.palette=['#123456'];
   const app=await setup([], '', {cloudDocuments:documents}),{get,enter,chart}=app;
@@ -301,7 +301,7 @@ test('regex name collisions keep exact source columns, selections and manual axe
   assert.deepEqual(Array.from(restored.chart.option.series,s=>s.data[0][1]),[2,3]);
   restored.get('config-tab-selection').onclick();restored.get('select-all').onclick();await restored.get('config-list').children[0].children[0].events.click();
   assert.deepEqual(Array.from(restored.chart.option.series,s=>s.data[0][1]),[2,3]);
-  assert.equal(selected.selectedSeries[0].sourceName,b);assert.equal(selected.selectedSeries[1].sourceOccurrence,2);assert.equal(axes.seriesAxes[0].sourceName,b);
+  assert.equal(selected.selectedSeries[0].sourceName,b);assert.equal(selected.selectedSeries[1].sourceOccurrence,2);assert.equal(selected.seriesAxes[0].sourceName,b);assert.equal(axes.seriesAxes,undefined);
 });
 
 test('legacy migration and category changes do not overwrite the other selected profile or its settings', async () => {
@@ -925,7 +925,8 @@ test('coordinate assignments save unchecked curves, export and import, and resto
   const selection = await saveCategory(app, 'selection', '只看温度');
   const saved = await saveCategory(app, 'axes', '分区配置');
   assert.deepEqual(selection.selectedSeries.map(s => s.name), ['温度']); assert.equal(saved.selectedSeries, undefined);
-  assert.deepEqual(saved.seriesAxes, [{ name: '压力', occurrence: 1, sourceName: '压力', sourceOccurrence: 1, axisId: 'auto' }, { name: '温度', occurrence: 1, sourceName: '温度', sourceOccurrence: 1, axisId: 'medium' }]);
+  assert.equal(saved.seriesAxes, undefined);
+  assert.deepEqual(selection.seriesAxes, [{ name: '压力', occurrence: 1, sourceName: '压力', sourceOccurrence: 1, axisId: 'auto' }, { name: '温度', occurrence: 1, sourceName: '温度', sourceOccurrence: 1, axisId: 'medium' }]);
   await get('export-configs').onclick();assert.deepEqual(JSON.parse(await app.downloads.at(-1).text()).configs, [saved]);
   get('series-axis-settings').onclick(); get('series-axis-reset').onclick(); applyCurveAxes(get);
   await get('paste-load').onclick();
@@ -937,9 +938,39 @@ test('coordinate assignments save unchecked curves, export and import, and resto
   restored.enter(pasted); await restored.get('paste-load').onclick();
   restored.get('select-all').onclick(); assert.deepEqual(Array.from(restored.chart.option.yAxis, a => Array.from(a.band)), [[0, 0.25], [0, 1]]);
   const imported = await setup(); imported.enter(pasted); await imported.get('paste-load').onclick();
-  await imported.get('config-input').onchange({ target: { files: [dataFile('bands.json', JSON.stringify(saved))] } });
-  imported.get('series-search').value = '温度'; imported.get('select-all').onclick(); imported.get('config-tab-axes').onclick();
+  await imported.get('config-input').onchange({ target: { files: [dataFile('bands.json', JSON.stringify(selection))] } });
+  imported.get('config-tab-selection').onclick();
   await imported.get('config-list').children[0].children[0].events.click(); assert.deepEqual(Array.from(imported.chart.option.yAxis[0].band), [0, 0.25]);
+});
+
+test('selection profiles store only checked or manually assigned series and axis profiles never change their assignments', async () => {
+  const app=await setup(),{get,enter,chart}=app;
+  const pasted='时间\t已选自动\t已选手动\t未选手动\t未选自动\n0\t1\t2\t3\t4\n1\t2\t3\t4\t5';
+  enter(pasted);await get('paste-load').onclick();
+  for(const index of [0,1]){const checkbox=get('series-list').children[index].children[0];checkbox.checked=true;checkbox.events.change();}
+  await saveCategory(app,'selection','组合');const axes=await saveCategory(app,'axes','坐标');
+  get('series-axis-settings').onclick();curveAxis(get,'已选手动','medium');curveAxis(get,'未选手动','auto');applyCurveAxes(get);
+  assert.doesNotMatch(get('config-active').textContent,/已修改/);
+  get('config-tab-selection').onclick();assert.match(get('config-active').textContent,/已修改/);
+  const profile=await saveCategory(app,'selection','组合');
+  assert.deepEqual(profile.selectedSeries.map(s=>s.name),['已选自动','已选手动']);
+  assert.deepEqual(profile.seriesAxes.map(s=>[s.name,s.axisId]),[['已选手动','medium'],['未选手动','auto']]);
+  assert.ok(!JSON.stringify(profile).includes('未选自动'));assert.equal(axes.seriesAxes,undefined);
+  await get('export-configs').onclick();const exported=await app.downloads.at(-1).text();assert.equal(app.downloadNames.at(-1),'selection.json');
+  get('config-tab-axes').onclick();await get('config-list').children[0].children[0].events.click();
+  assert.deepEqual(Array.from(chart.option.yAxis,a=>Array.from(a.band)),[[0.8,1],[0,0.25]]);
+  get('series-axis-settings').onclick();assert.equal(curveAxis(get,'未选手动').value,'auto');get('series-axis-cancel').onclick();
+  await get('export-configs').onclick();assert.ok(!(await app.downloads.at(-1).text()).includes('seriesAxes'));
+  const restored=await setup([], '', {indexedDB:app.idb});restored.enter(pasted);await restored.get('paste-load').onclick();
+  assert.deepEqual(Array.from(restored.chart.option.series,s=>s.name),['已选自动','已选手动']);
+  restored.get('series-axis-settings').onclick();assert.equal(curveAxis(restored.get,'未选手动').value,'auto');assert.equal(curveAxis(restored.get,'未选自动').value,'');restored.get('series-axis-cancel').onclick();
+  const imported=await setup();await imported.get('config-input').onchange({target:{files:[dataFile('selection.json',exported)]}});
+  await imported.get('config-list').children[0].children[0].events.click();imported.enter(pasted);await imported.get('paste-load').onclick();
+  assert.deepEqual(Array.from(imported.chart.option.series,s=>s.name),['已选自动','已选手动']);
+  imported.get('select-none').onclick();const none=await saveCategory(imported,'selection','只保存分配');assert.deepEqual(none.selectedSeries,[]);assert.equal(none.seriesAxes.length,2);
+  await imported.get('paste-load').onclick();assert.equal(imported.chart.option.series.length,0);
+  imported.get('series-axis-settings').onclick();assert.equal(curveAxis(imported.get,'未选手动').value,'auto');imported.get('series-axis-reset').onclick();applyCurveAxes(imported.get);
+  const empty=await saveCategory(imported,'selection','全部自动');assert.deepEqual(empty.selectedSeries,[]);assert.deepEqual(empty.seriesAxes,[]);
 });
 
 test('manual assignments match original device headers and duplicate columns and legacy configs reset them', async () => {
@@ -952,7 +983,7 @@ test('manual assignments match original device headers and duplicate columns and
   enter(['时间\t' + [first, second, first].join('\t'), '0\t1\t2\t3', '1\t4\t5\t6'].join('\n')); await get('paste-load').onclick();
   assert.deepEqual(Array.from(chart.option.series, s => [s.name, Array.from(chart.option.yAxis[s.yAxisIndex].band)]), [['告警1[1] (2)', [0, 0.25]], ['告警1[1] (3)', [0, 1]]]);
   get('time-mode').value = 'number'; get('time-mode').onchange(); assert.equal(chart.option.yAxis.length, 2);
-  get('config-tab-axes').onclick(); await get('config-list').children[1].children[0].events.click();
+  get('config-tab-selection').onclick(); await get('config-list').children[1].children[0].events.click();
   assert.equal(chart.option.yAxis.length, 1); assert.deepEqual(Array.from(chart.option.yAxis[0].band), [0.8, 1]);
   assert.equal(chart.option.yAxis[0].min, 1); assert.equal(chart.option.yAxis[0].max, 7);
 });

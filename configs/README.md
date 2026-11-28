@@ -19,7 +19,7 @@
 | axes.json | defaults.axisRegions | 各组起始、终止比例，从顶部按 0～100 计算；必须包含五个组 |
 | axes.json | defaults.autoBounds | paddingPercent 为向两端拓宽百分比，minimumConstantPadding 为常量最小拓宽量，roundOutward 控制向外取整 |
 | axes.json | defaults.axisLimits | 默认手动上下限；空对象表示按数据自动计算 |
-| axes.json | defaults.seriesAxes | 默认的单条曲线坐标分配 |
+| selection.json | defaults.seriesAxes | 默认的单条曲线手动坐标分配，包含未勾选但已分配坐标轴的序列 |
 | regex.json | defaults.headerRule | enabled、pattern、flags、replacement |
 | selection.json | defaults.selectedSeries | 默认勾选序列；当前为空，首次加载不全选 |
 | selection.json | defaults.palette | 曲线默认配色列表 |
@@ -32,3 +32,7 @@
 导入到本地时只导入 configs，不会改变网站默认值。旧版单项配置和配置数组继续支持本地导入；升级旧云端文件时，可将旧数组放入新文档的 configs，保留完整 defaults。
 
 三个文件都必须存在且默认值有效。首次载入失败时提示检查文件，不使用 JS 中的备用默认值；刷新失败保留之前成功载入的配置。成功刷新不会自动覆盖当前曲线，新的默认值用于后续加载、恢复默认与导出。
+
+序列配置的 `selectedSeries` 保存已勾选序列及颜色，`seriesAxes` 保存全部手动分配，未勾选且未手动分配的序列不写入。坐标轴配置不保存序列名称或归属。首次加载保持两个数组为空。
+
+旧版 axes.json 中的分配在读取时迁移到序列分类；同名旧序列配置可合并，无可合并项时生成“原名（旧坐标分配）”。旧 defaults.seriesAxes 在 selection.defaults 尚无该字段时兼容迁移。网站文件不会自动改写，更新时应一并上传新的 axes.json 和 selection.json；已有云端配置请先导入、导出或手动迁移，不要用空列表覆盖自己的配置。

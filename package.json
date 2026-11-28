@@ -1,6 +1,6 @@
 {
   "name": "curve-viewer",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "private": true,
   "description": "离线 Excel/CSV/JSON/TXT/PMSD 多序列曲线查看器",
   "scripts": {

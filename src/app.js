@@ -8,7 +8,7 @@
     if (!element) throw new Error(`页面元素 #${id} 不存在`);
     return element;
   };
-  const CONFIG_LABELS = { axes: '坐标轴', regex: '标题正则', selection: '勾选序列' };
+  const CONFIG_LABELS = { axes: '坐标轴', regex: '标题正则', selection: '序列' };
   const state = { workbook: null, data: null, selected: new Set(), configs: [], active: null, axisActive: null, regexActive: null, dirty: false, axisDirty: false, regexDirty: false, configType: 'selection', configNames: { axes: '', regex: '', selection: '' }, headerRule: null, filename: '', zoom: [0, 100], axes: [], axisLimits: {}, axisAssignments: {}, axisRegions: {}, busy: false, storageWarning: false };
   Object.assign(state, { cloudConfigs: [], activeSources: {}, lastChoices: {}, loadingConfigs: true, configBusy: false, storageReady: false, storageError: '', cloudMessage: '正在读取云端配置…' });
   let configsReady;
@@ -38,7 +38,7 @@
     try {
       const stored = localStorage.getItem('curve-explorer.configs.v2'), legacy = stored === null;
       const data = JSON.parse((legacy ? localStorage.getItem('curve-explorer.configs.v1') : stored) || '[]');
-      if (Array.isArray(data)) for (const item of data) { try { configs.push(...C.splitConfig(item)); } catch { /* Preserve other valid old profiles. */ } }
+      if (Array.isArray(data)) for (const item of data) { try { C.splitConfig(item); configs.push(item); } catch { /* Preserve other valid old profiles. */ } }
       const oldName = localStorage.getItem('curve-explorer.last-config.v1');
       Object.assign(last, legacy ? { axes: oldName, selection: oldName } : JSON.parse(localStorage.getItem('curve-explorer.last-config.v2') || '{}'));
     }
@@ -299,9 +299,9 @@
     event.preventDefault();
     if (!state.data) return;
     const keys = new Set([...Object.keys(state.axisAssignments), ...Object.keys(axisAssignmentDraft)]);
-    if ([...keys].some(key => state.axisAssignments[key] !== axisAssignmentDraft[key])) state.axisDirty = true;
+    if ([...keys].some(key => state.axisAssignments[key] !== axisAssignmentDraft[key])) state.dirty = true;
     state.axisAssignments = { ...axisAssignmentDraft };
-    renderSeries(); renderChart(); renderConfigs(); $('series-axis-dialog').close(); notify('曲线坐标系已更新。');
+    renderSeries(); renderChart(); renderConfigs(); $('series-axis-dialog').close(); notify('曲线坐标系已更新；保存序列配置后可复用。');
   }
   function clearRegionError() {
     $('axis-region-error').textContent = '';
@@ -433,7 +433,7 @@
     $('time-mode').value = mode;
     $('sheet-select').replaceChildren(...workbook.SheetNames.map(name => Object.assign(document.createElement('option'), { value: name, textContent: name, selected: name === sheet })));
     $('sheet-select').hidden = workbook.SheetNames.length < 2;
-    if (!keepSelection) { matchConfig(state.active || C.getDefaults('selection'), false); matchAxes(state.axisActive || C.getDefaults('axes')); }
+    if (!keepSelection) matchConfig(state.active || C.getDefaults('selection'), false);
     updateSummary(); renderSeries(); renderChart(); renderConfigs();
   }
   function clearData() {
@@ -511,7 +511,7 @@
       const select = document.createElement('button'); select.className = 'config-choice';
       select.disabled = locked; select.setAttribute('aria-pressed', chosen ? 'true' : 'false');
       const name = document.createElement('span'); name.textContent = config.name + (chosen && dirty ? ' · 已修改' : ''); name.title = name.textContent;
-      const count = document.createElement('small'); count.textContent = type === 'selection' ? `${config.selectedSeries.length} 条` : type === 'axes' ? '轴' : config.headerRule.enabled ? '启用' : '停用';
+      const count = document.createElement('small'); count.textContent = type === 'selection' ? `${config.selectedSeries.length} 勾选 · ${config.seriesAxes.length} 分配` : type === 'axes' ? '轴' : config.headerRule.enabled ? '启用' : '停用';
       select.append(name, count); select.addEventListener('click', () => applyConfig(config, source)); row.append(select);
       if (source === 'local') {
         const remove = document.createElement('button'); remove.className = 'remove-config'; remove.textContent = '×'; remove.disabled = locked || !state.storageReady; remove.setAttribute('aria-label', `删除本地配置 ${config.name}`); remove.title = '从本地 IndexedDB 删除此项';
@@ -542,11 +542,11 @@
       const s = findConfigSeries(entry);
       if (!s) missing.push(entry.name); else { selected.add(s.key); if (entry.color) s.color = entry.color; }
     }
-    state.selected = selected;
+    state.selected = selected; matchSeriesAxes(config);
     if (missing.length && report) notify(`已匹配 ${selected.size} 条序列，${missing.length} 条未在当前工作表找到：${missing.slice(0, 4).join('、')}${missing.length > 4 ? '…' : ''}`, true);
     return missing;
   }
-  function matchAxes(config) {
+  function matchSeriesAxes(config) {
     state.axisAssignments = {};
     if (state.data) for (const entry of config.seriesAxes || []) { const s = findConfigSeries(entry); if (s) state.axisAssignments[s.key] = entry.axisId; }
   }
@@ -583,7 +583,7 @@
       else if (config.type === 'axes') {
         if (data) { replaceCurrentHeaders(data); state.zoom = [0, 100]; }
         state.axisLimits = C.validateAxisLimits(config.axisLimits); state.axisRegions = C.validateAxisRegions(config.axisRegions);
-        matchAxes(config); $('time-mode').value = $('paste-time-mode').value = config.timeMode; state.lastMode = config.timeMode;
+        $('time-mode').value = $('paste-time-mode').value = config.timeMode; state.lastMode = config.timeMode;
       } else if (state.data) missing = matchConfig(config);
       state[activeKey(config.type)] = config; state[dirtyKey(config.type)] = false;
       state.activeSources[config.type] = source;
@@ -598,11 +598,13 @@
     if (!state.storageReady) return notify('本地 IndexedDB 不可用，配置未保存。', true);
     if (!C.defaultsReady) return notify('请先成功读取 configs 中的默认配置。', true);
     const type = state.configType;
-    if (type === 'selection' && !state.data) return notify('请先载入数据，再保存勾选序列配置。', true);
+    if (type === 'selection' && !state.data) return notify('请先载入数据，再保存序列配置。', true);
     const name = $('config-name').value.trim() || `${CONFIG_LABELS[type]}配置 ${state.configs.filter(c => c.type === type).length + 1}`;
     const identity = s => ({ name: s.name, occurrence: s.occurrence, sourceName: s.sourceName, sourceOccurrence: s.sourceOccurrence });
-    const fields = type === 'regex' ? { headerRule: state.headerRule } : type === 'selection' ? { selectedSeries: selectedSeries().map(s => ({ ...identity(s), color: s.color })) } : { timeMode: $('time-mode').value, axisLimits: state.axisLimits, axisRegions: state.axisRegions,
-      seriesAxes: state.data ? state.data.series.filter(s => state.axisAssignments[s.key]).map(s => ({ ...identity(s), axisId: state.axisAssignments[s.key] })) : state.axisActive?.seriesAxes || [] };
+    const fields = type === 'regex' ? { headerRule: state.headerRule } : type === 'selection' ? {
+      selectedSeries: selectedSeries().map(s => ({ ...identity(s), color: s.color })),
+      seriesAxes: state.data.series.filter(s => state.axisAssignments[s.key]).map(s => ({ ...identity(s), axisId: state.axisAssignments[s.key] }))
+    } : { timeMode: $('time-mode').value, axisLimits: state.axisLimits, axisRegions: state.axisRegions };
     let config;
     try { config = C.validateProfile({ schema: 'curve-viewer', version: 2, type, name, ...fields }); } catch (error) { notify(error.message, true); return; }
     configBusy(true);

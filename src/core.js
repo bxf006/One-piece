@@ -252,7 +252,7 @@
     if (!value || value.schema !== 'curve-viewer' || value.version !== 2 || !CONFIG_TYPES.includes(value.type)) throw new Error('需要 curve-viewer v2 分类配置。');
     if (typeof value.name !== 'string' || !value.name.trim() || value.name.length > 120) throw new Error('配置名称应为 1～120 个字符。');
     const profile = { schema: 'curve-viewer', version: 2, type: value.type, name: value.name.trim() };
-    const fields = { axes: ['timeMode', 'axisLimits', 'axisRegions', 'seriesAxes'], regex: ['headerRule'], selection: ['selectedSeries'] };
+    const fields = { axes: ['timeMode', 'axisLimits', 'axisRegions'], regex: ['headerRule'], selection: ['selectedSeries', 'seriesAxes'] };
     for (const type of CONFIG_TYPES) if (type !== value.type) for (const field of fields[type]) {
       if (Object.hasOwn(value, field)) throw new Error(`分类配置不能混入其他类型的字段：${field}`);
     }
@@ -269,13 +269,55 @@
         return { ...entry, sourceName: original.sourceName, sourceOccurrence: original.sourceOccurrence };
       });
     }
-    if (value.type === 'selection') return { ...profile, selectedSeries: identities(validated.selectedSeries, value.selectedSeries) };
-    return { ...profile, timeMode: validated.timeMode, axisLimits: validated.axisLimits || {}, axisRegions: validated.axisRegions || {}, seriesAxes: identities(validated.seriesAxes || [], value.seriesAxes || []) };
+    if (value.type === 'selection') return { ...profile, selectedSeries: identities(validated.selectedSeries, value.selectedSeries), seriesAxes: identities(validated.seriesAxes || [], value.seriesAxes || []) };
+    return { ...profile, timeMode: validated.timeMode, axisLimits: validated.axisLimits || {}, axisRegions: validated.axisRegions || {} };
   }
   function splitConfig(value) {
+    if (value?.version === 2 && value.type === 'axes' && Object.hasOwn(value, 'seriesAxes')) {
+      const { seriesAxes, ...axes } = value;
+      const selection = validateProfile({ schema: value.schema, version: 2, type: 'selection', name: value.name, selectedSeries: [], seriesAxes });
+      return [validateProfile(axes), ...(selection.seriesAxes.length ? [selection] : [])];
+    }
     if (value?.version === 2) return [validateProfile(value)];
     const legacy = validateConfig(value), base = { schema: 'curve-viewer', version: 2, name: legacy.name };
-    return [validateProfile({ ...base, type: 'axes', timeMode: legacy.timeMode, axisLimits: legacy.axisLimits || {}, axisRegions: legacy.axisRegions || {}, seriesAxes: legacy.seriesAxes || [] }), validateProfile({ ...base, type: 'selection', selectedSeries: legacy.selectedSeries })];
+    return [validateProfile({ ...base, type: 'axes', timeMode: legacy.timeMode, axisLimits: legacy.axisLimits || {}, axisRegions: legacy.axisRegions || {} }), validateProfile({ ...base, type: 'selection', selectedSeries: legacy.selectedSeries, seriesAxes: legacy.seriesAxes || [] })];
+  }
+  // Move old axis-owned assignments without overwriting an explicitly saved selection profile.
+  function migrateProfiles(values, last = {}) {
+    const profiles = new Map(), legacySelections = new Set(), assignments = [];
+    const id = config => keyOf(config.type, config.name);
+    function preserveMapping(mapping) {
+      let index = 1, name;
+      do { const suffix = `（旧坐标分配${index === 1 ? '' : index}）`; name = mapping.name.slice(0, 120 - suffix.length) + suffix; index++; } while (profiles.has(id({ ...mapping, name })));
+      profiles.set(id({ ...mapping, name }), { ...mapping, name });
+    }
+    for (const value of values) {
+      const parts = splitConfig(value), oldAxes = value?.version === 2 && value.type === 'axes' && Object.hasOwn(value, 'seriesAxes');
+      if (value?.type === 'selection' && !Object.hasOwn(value, 'seriesAxes')) legacySelections.add(value.name.trim());
+      if (oldAxes) assignments.push(parts[1] || { schema: 'curve-viewer', version: 2, type: 'selection', name: parts[0].name, selectedSeries: [], seriesAxes: [] });
+      for (const profile of oldAxes ? parts.slice(0, 1) : parts) {
+        if (profiles.has(id(profile))) throw new Error(`同类配置名称重复：${profile.name}`);
+        profiles.set(id(profile), profile);
+      }
+    }
+    for (const mapping of assignments) {
+      if (!mapping.seriesAxes.length) continue;
+      const existing = profiles.get(id(mapping));
+      if (existing && legacySelections.has(mapping.name)) existing.seriesAxes = mapping.seriesAxes;
+      else if (!existing || JSON.stringify(existing.seriesAxes) !== JSON.stringify(mapping.seriesAxes)) {
+        preserveMapping(mapping);
+      }
+    }
+    // The last axis and selection profiles used to combine at load time, even with different names.
+    if (last.axes?.source === 'local' && last.selection?.source === 'local' && legacySelections.has(last.selection.name)) {
+      const mapping = assignments.find(config => config.name === last.axes.name), selection = profiles.get(id({ type: 'selection', name: last.selection.name }));
+      if (mapping && selection) {
+        const original = assignments.find(config => config.name === selection.name);
+        if (original?.seriesAxes.length && JSON.stringify(original.seriesAxes) !== JSON.stringify(mapping.seriesAxes)) preserveMapping(original);
+        selection.seriesAxes = mapping.seriesAxes;
+      }
+    }
+    return [...profiles.values()];
   }
   function validColor(value) {
     if (typeof value !== 'string') return false;
@@ -287,14 +329,14 @@
     if (!CONFIG_TYPES.includes(type) || !value || typeof value !== 'object' || Array.isArray(value)) throw new Error(`${type}.json 缺少有效的 defaults。`);
     if (type === 'regex') return { headerRule: validateHeaderRule(value.headerRule || null) };
     if (type === 'selection') {
-      const selection = validateProfile({ schema: 'curve-viewer', version: 2, type, name: 'defaults', selectedSeries: value.selectedSeries });
+      const selection = validateProfile({ schema: 'curve-viewer', version: 2, type, name: 'defaults', selectedSeries: value.selectedSeries, seriesAxes: value.seriesAxes });
       if (!Array.isArray(value.palette) || !value.palette.length || value.palette.length > 512 || !value.palette.every(validColor)) throw new Error('selection.json 的默认配色 palette 无效。');
       const color = value.fallbackColor;
       if (!color || !Number.isFinite(color.hueStep) || color.hueStep <= 0 || color.hueStep > 360 || !Number.isFinite(color.saturation) || color.saturation < 0 || color.saturation > 100 || !Number.isFinite(color.lightness) || color.lightness < 0 || color.lightness > 100) throw new Error('selection.json 的 fallbackColor 无效。');
-      return { selectedSeries: selection.selectedSeries, palette: [...value.palette], fallbackColor: { hueStep: color.hueStep, saturation: color.saturation, lightness: color.lightness } };
+      return { selectedSeries: selection.selectedSeries, seriesAxes: selection.seriesAxes, palette: [...value.palette], fallbackColor: { hueStep: color.hueStep, saturation: color.saturation, lightness: color.lightness } };
     }
     if (!TIME_MODES.includes(value.timeMode)) throw new Error('axes.json 的默认时间格式无效。');
-    const axes = validateProfile({ schema: 'curve-viewer', version: 2, type, name: 'defaults', timeMode: value.timeMode, axisLimits: value.axisLimits, axisRegions: value.axisRegions, seriesAxes: value.seriesAxes });
+    const axes = validateProfile({ schema: 'curve-viewer', version: 2, type, name: 'defaults', timeMode: value.timeMode, axisLimits: value.axisLimits, axisRegions: value.axisRegions });
     if (!AXIS_IDS.every(id => axes.axisRegions[id])) throw new Error('axes.json 的 defaults.axisRegions 必须包含所有坐标组。');
     if (!Array.isArray(value.axisGroups) || value.axisGroups.length !== AXIS_IDS.length) throw new Error('axes.json 的 defaults.axisGroups 必须包含所有坐标组。');
     const seen = new Set(), groups = value.axisGroups.map(group => {
@@ -305,14 +347,17 @@
     });
     const bounds = value.autoBounds;
     if (!bounds || !Number.isFinite(bounds.paddingPercent) || bounds.paddingPercent < 0 || bounds.paddingPercent > 100 || !Number.isFinite(bounds.minimumConstantPadding) || bounds.minimumConstantPadding <= 0 || typeof bounds.roundOutward !== 'boolean') throw new Error('axes.json 的默认自动上下限规则无效。');
-    return { timeMode: axes.timeMode, axisLimits: axes.axisLimits, axisRegions: axes.axisRegions, seriesAxes: axes.seriesAxes, axisGroups: groups,
+    return { timeMode: axes.timeMode, axisLimits: axes.axisLimits, axisRegions: axes.axisRegions, axisGroups: groups,
       autoBounds: { paddingPercent: bounds.paddingPercent, minimumConstantPadding: bounds.minimumConstantPadding, roundOutward: bounds.roundOutward } };
   }
   function configureDefaults(value) {
     const next = Object.fromEntries(CONFIG_TYPES.map(type => [type, validateDefaults(type, value?.[type])]));
+    if (value?.selection && !Object.hasOwn(value.selection, 'seriesAxes') && value.axes?.seriesAxes !== undefined) {
+      next.selection.seriesAxes = validateProfile({ schema: 'curve-viewer', version: 2, type: 'selection', name: 'defaults', selectedSeries: [], seriesAxes: value.axes.seriesAxes }).seriesAxes;
+    }
     const groups = next.axes.axisGroups.map(group => ({ ...group, band: [next.axes.axisRegions[group.id].start / 100, next.axes.axisRegions[group.id].end / 100] }));
     defaults = next; DEFAULT_HEADER_RULE = Object.freeze({ ...next.regex.headerRule });
     AXIS_GROUPS.splice(0, AXIS_GROUPS.length, ...groups); RANGES.splice(0, RANGES.length, ...groups.filter(g => g.id !== 'auto')); PALETTE.splice(0, PALETTE.length, ...next.selection.palette);
   }
-  return { RANGES, AXIS_GROUPS, PALETTE, TIME_MODES, CONFIG_TYPES, get DEFAULT_HEADER_RULE() { return DEFAULT_HEADER_RULE; }, get defaultsReady() { return !!defaults; }, requireDefaults, getDefaults, configureDefaults, validateDefaults, validateHeaderRule, createHeaderFormatter, renameHeaders, validateProfile, splitConfig, numeric, rangeFor, keyOf, normalizeHeader, colorAt, parseTextTime, readSheet, axesFor, axisIdFor, axisRegionFor, axisRegionLabel, nearest, formatNumber, formatTime, validateConfig, validateAxisLimits, validateAxisRegions };
+  return { RANGES, AXIS_GROUPS, PALETTE, TIME_MODES, CONFIG_TYPES, get DEFAULT_HEADER_RULE() { return DEFAULT_HEADER_RULE; }, get defaultsReady() { return !!defaults; }, requireDefaults, getDefaults, configureDefaults, validateDefaults, validateHeaderRule, createHeaderFormatter, renameHeaders, validateProfile, splitConfig, migrateProfiles, numeric, rangeFor, keyOf, normalizeHeader, colorAt, parseTextTime, readSheet, axesFor, axisIdFor, axisRegionFor, axisRegionLabel, nearest, formatNumber, formatTime, validateConfig, validateAxisLimits, validateAxisRegions };
 });
