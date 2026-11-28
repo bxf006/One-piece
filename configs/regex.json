@@ -1,0 +1,14 @@
+{
+  "schema": "curve-viewer-bundle",
+  "version": 1,
+  "type": "regex",
+  "defaults": {
+    "headerRule": {
+      "enabled": true,
+      "pattern": "^.*\\/\\s*([^/()]*?\\S)\\s*\\([^()]*\\)\\s*\\[\\s*([^\\[\\]]*?\\S)\\s*\\]\\s*$",
+      "flags": "",
+      "replacement": "$1[$2]"
+    }
+  },
+  "configs": []
+}

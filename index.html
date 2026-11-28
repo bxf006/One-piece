@@ -1,0 +1,1994 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="本地 Excel / CSV / JSON / TXT / PMSD 多序列曲线查看器，支持多坐标轴和 JSON 显示配置。">
+  <title>曲线查看 · 本地数据工作台</title>
+  <style>:root{font-family:Inter,"Segoe UI","Microsoft YaHei",sans-serif;color:#263247;background:#f4f6fa;font-size:14px;font-synthesis:none;--accent:#5465e8;--muted:#788498;--line:#e8ecf3;--radius:14px}*{box-sizing:border-box}body{margin:0}button,input,select{font:inherit}button{cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid #dfe4ed;background:#fff;color:#43516a;border-radius:8px;min-height:36px;padding:8px 13px;transition:background .15s,border-color .15s}button:hover{background:#f4f6ff;border-color:#b9c2f8}button:disabled{opacity:.45;cursor:not-allowed}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #bdc5ff;outline-offset:2px}button.primary{background:var(--accent);border-color:var(--accent);color:white;box-shadow:0 3px 7px #5465e822}button.primary:hover{background:#4556d3}button.subtle{border-color:transparent;background:transparent}svg{width:18px;height:18px;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.workspace{max-width:1920px;margin:auto;padding:24px 28px;display:grid;grid-template-columns:288px minmax(0,1fr);gap:22px}.sidebar{display:flex;flex-direction:column;gap:18px;min-width:0}.panel{background:white;border:1px solid var(--line);border-radius:var(--radius);box-shadow:0 3px 12px #26324702}.panel-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:19px 18px 14px}.panel-heading h2{font-size:15px;margin:0;font-weight:650}.counter{font-size:12px;padding:3px 8px;border-radius:5px;color:var(--accent);background:#eef0ff;font-variant-numeric:tabular-nums}.search{margin:0 16px;position:relative}.search svg{position:absolute;left:10px;top:10px;width:16px;color:#98a1b1}.search input{width:100%;border:1px solid var(--line);border-radius:7px;padding:9px 10px 9px 33px;background:#fafbfd;color:#39475d;min-width:0}.list-tools{padding:9px 17px 7px;display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted)}.list-tools button{font-size:12px;padding:3px 2px;min-height:24px;border:0;background:none;color:#63708c}.list-tools span{display:flex;gap:12px}.series-list{max-height:390px;min-height:110px;overflow:auto;padding:0 8px 10px}.series-item{display:flex;align-items:flex-start;gap:9px;padding:11px 10px;border-radius:8px;cursor:pointer}.series-item:hover{background:#f6f7fb}.series-item:has(input:checked){background:#f8f9fe}.series-item+.series-item{margin-top:3px}.series-item input{accent-color:var(--accent);width:15px;height:15px;flex-shrink:0;margin:3px 1px 0 0}.series-content{min-width:0;flex:1}.series-name{display:flex;gap:8px;align-items:center;min-height:19px}.swatch{width:17px;height:3px;border-radius:4px;flex-shrink:0}.series-name strong{font-size:14px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.series-meta{font-size:12px;color:#8791a1;margin-top:5px;display:flex;justify-content:space-between;gap:5px;font-variant-numeric:tabular-nums}.series-meta .range{font-size:11px;background:#f0f3f8;padding:1px 5px;border-radius:4px;color:#7a8698}.config-body{padding:0 16px 16px}.config-field{display:flex;gap:6px}.config-field input{width:100%;min-width:0;border:1px solid var(--line);border-radius:7px;padding:9px 10px}.config-field button{width:38px;flex-shrink:0;padding:7px}.config-list{display:flex;flex-direction:column;gap:6px;margin:12px 0;max-height:190px;overflow:auto}.config-row{display:flex;align-items:center;gap:4px;border:1px solid var(--line);border-radius:7px;padding:2px}.config-row.active{border-color:#b7c0ff;background:#f5f6ff}.config-choice{display:flex;flex:1;min-width:0;justify-content:flex-start;border:0;background:transparent;padding:7px;font-size:13px}.config-choice span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.config-choice small{font-size:11px;color:var(--muted);margin-left:auto;flex-shrink:0}.config-row .remove-config{padding:4px;min-height:26px;border:0;background:transparent;color:#9ba4b3;font-size:18px}.config-actions{display:flex;gap:8px}.config-actions button{flex:1;font-size:12px;padding:7px 6px;gap:5px}.config-actions svg{width:15px;height:15px}.empty-list{font-size:12px;line-height:1.8;color:#8c96a6;padding:10px 3px;margin:0}.sidebar-note{font-size:12px;line-height:1.8;color:#8c96a6;margin:0 5px}.main{min-width:0}.intro{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:1px 0 18px}.eyebrow{font-size:11px;letter-spacing:1.5px;color:#8c96a8;margin-bottom:7px}.intro h2{font-size:24px;font-weight:600;margin:0;letter-spacing:.5px}.intro p{margin:7px 0 0;color:var(--muted);font-size:13px}.demo-tag{color:#8a78b2;background:#f0edf8;border:1px solid #e5dff1;border-radius:6px;font-size:12px;white-space:nowrap;padding:6px 9px}.summary{display:grid;grid-template-columns:1.45fr 1fr 1fr 1fr;gap:13px;margin-bottom:18px}.stat{background:white;border:1px solid var(--line);border-radius:11px;padding:15px 17px;min-width:0}.stat-label{font-size:12px;color:#8b94a5;display:flex;align-items:center;gap:7px;margin-bottom:9px}.stat-label svg{width:14px;height:14px}.stat-value{font-size:22px;font-weight:600;line-height:1.2;letter-spacing:.3px;font-variant-numeric:tabular-nums}.stat-value.file{font-size:15px;line-height:27px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.stat-value small{font-size:12px;font-weight:400;color:#99a2b1;margin-left:6px}.chart-panel{overflow:hidden}.chart-toolbar{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:20px 22px 10px}.chart-title h3{margin:0;font-size:16px;font-weight:600}.chart-title p{margin:6px 0 0;color:#919aaa;font-size:12px}.chart-controls{display:flex;align-items:center;gap:8px}.chart-controls button{padding:6px 9px;min-height:31px;font-size:12px}.chart-controls select{max-width:150px}.select-control{appearance:none;border:1px solid var(--line);border-radius:7px;min-height:32px;padding:6px 27px 6px 9px;color:#647087;font-size:12px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M3 4.5 6 7.5 9 4.5' fill='none' stroke='%23788498' stroke-width='1.4'/%3E%3C/svg%3E") right 7px center/12px no-repeat}.axis-legend{padding:8px 22px 2px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-height:40px}.axis-legend .axis-caption{font-size:12px;color:#949dad;margin-right:4px}.axis-tag{display:inline-flex;align-items:center;gap:6px;font-size:11px;padding:4px 8px;border-radius:5px;border:1px solid #e9ecf4;background:#fafbfe;color:#7d899e}.axis-tag i{width:6px;height:6px;border-radius:50%}.chart-scroll{overflow:auto}.plot-wrap{position:relative;min-width:620px}.chart{width:100%;height:490px}.chart-empty{position:absolute;inset:45% 0 auto;text-align:center;color:#94a0b4;font-size:14px;pointer-events:none}.cursor-line{position:absolute;pointer-events:none;border-left:1px dashed #73809a;z-index:2}.cursor-label{position:absolute;pointer-events:none;z-index:3;padding:5px 8px;border-radius:5px;background:#69758b;color:white;font:11px "Segoe UI",sans-serif;white-space:nowrap;transform:translateX(-50%)}.hover-card{position:absolute;pointer-events:none;z-index:5;min-width:210px;max-width:320px;background:rgba(255,255,255,.88);backdrop-filter:blur(9px);border:1px solid rgba(214,220,234,.9);box-shadow:0 8px 28px #27355120;border-radius:10px;padding:13px 15px}.hover-time{font-size:12px;font-weight:600;color:#4d5b73;padding-bottom:9px;border-bottom:1px solid #e7ebf4;margin-bottom:7px;white-space:nowrap}.hover-row{display:flex;align-items:center;gap:8px;font-size:12px;padding:4px 0}.hover-row .hover-name{max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.hover-row strong{font-weight:600;font-variant-numeric:tabular-nums;margin-left:auto;padding-left:16px}.chart-footer{padding:12px 21px;display:flex;justify-content:space-between;gap:15px;border-top:1px solid var(--line);color:#8b96a8;font-size:12px}.footer-hint{display:flex;align-items:center;gap:7px}.footer-hint svg{width:14px;height:14px}.detail-bar{margin-top:15px;display:flex;gap:14px;justify-content:space-between;align-items:flex-start;color:#929cad;font-size:12px;line-height:1.7}.detail-bar button{padding:0;min-height:20px;white-space:nowrap;color:#7a86a0;font-size:12px}.notice{margin-top:12px;padding:10px 14px;border:1px solid #ece1c6;background:#fffaf0;border-radius:8px;font-size:12px;line-height:1.7;color:#a07c36}.toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%);padding:12px 20px;background:#293650;color:#fff;border-radius:9px;box-shadow:0 8px 25px #26324725;font-size:14px;z-index:100;max-width:min(650px,90vw);line-height:1.6}.toast.error{background:#a74754}.drop-overlay{position:fixed;inset:14px;z-index:50;border:2px dashed var(--accent);border-radius:18px;background:#f1f3fff2;display:grid;place-content:center;text-align:center;color:var(--accent);font-size:22px;pointer-events:none}.drop-overlay small{font-size:14px;margin-top:12px}dialog{max-width:660px;width:calc(100% - 32px);padding:28px;border:1px solid var(--line);border-radius:15px;box-shadow:0 20px 80px #19223730;color:#46536a}dialog::backdrop{background:#25314a55}dialog h2{font-size:20px;margin:0 0 18px}dialog p,dialog li{font-size:14px;line-height:1.9}dialog table{border-collapse:collapse;width:100%;font-size:13px}dialog th,dialog td{border:1px solid var(--line);padding:9px;text-align:left}dialog .dialog-actions{display:flex;justify-content:space-between;gap:10px;margin-top:20px}.loading{position:fixed;inset:0;z-index:60;display:grid;place-items:center;background:#f5f7fb99;backdrop-filter:blur(2px)}.loading span{padding:22px 30px;background:white;border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 35px #26324715}.loading span::before{content:'';display:inline-block;width:14px;height:14px;border:2px solid #dfe4fc;border-top-color:var(--accent);border-radius:50%;margin-right:12px;vertical-align:-2px;animation:spin 1s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}[hidden]{display:none!important}body.dragging{overflow:hidden}input[type=checkbox]{cursor:pointer}a{color:var(--accent)}
+.hover-card{pointer-events:auto;overflow-y:auto;overscroll-behavior:contain}.zoom-controls{position:absolute;bottom:10px;display:flex;gap:22px;font-size:11px;color:#929caf;align-items:center;height:17px}.zoom-controls label{display:flex;gap:7px;align-items:center;flex:1;min-width:0;white-space:nowrap}.zoom-controls input{width:100%;min-width:0;height:3px;accent-color:var(--accent);cursor:pointer}.chart canvas{display:block;cursor:crosshair}
+@media(min-width:1600px){.chart{height:560px}.series-list{max-height:460px}.workspace{grid-template-columns:310px minmax(0,1fr)}}
+@media(max-width:1150px){.workspace{padding:20px 18px;gap:16px;grid-template-columns:255px minmax(0,1fr)}.chart-toolbar{align-items:flex-start;flex-direction:column}.chart-controls{width:100%;flex-wrap:wrap}.summary{gap:8px}.stat{padding:13px 12px}.stat-value{font-size:20px}.chart{height:460px}}
+@media(max-width:800px){.workspace{display:flex;flex-direction:column;padding:18px 12px;gap:16px}.main{order:0}.sidebar{order:1;display:grid;grid-template-columns:1fr 1fr;gap:12px}.sidebar-note{grid-column:1/-1}.intro h2{font-size:21px}.summary{grid-template-columns:1.4fr 1fr 1fr 1fr}.stat{padding:12px 10px}.stat-label{font-size:11px}.stat-label svg{display:none}.stat-value.file{font-size:12px}.stat-value{font-size:20px}.chart-toolbar{padding:17px}.axis-legend{padding-left:17px}.chart-footer{padding:12px 15px;font-size:11px}.chart-footer>span:last-child{display:none}.detail-bar{font-size:11px}.chart{height:420px}.series-list{max-height:350px}.config-actions{flex-direction:column}}
+@media(max-width:480px){.sidebar{display:flex}.summary{grid-template-columns:1fr 1fr}.intro .demo-tag{display:none}.chart-controls{gap:6px}.stat-label{font-size:12px}.config-actions{flex-direction:row}}
+
+/* Workspace tabs and Excel clipboard entry. */
+.workspace-tabs{display:flex;gap:6px;max-width:1920px;margin:auto;padding:14px 28px 0;border-bottom:1px solid var(--line)}
+.workspace-tabs button{border:0;border-radius:8px 8px 0 0;padding:12px 20px;background:transparent;color:var(--muted);border-bottom:3px solid transparent}
+.workspace-tabs button[aria-selected="true"]{background:#eef0ff;color:var(--accent);border-bottom-color:var(--accent);font-weight:600}
+.workspace-tabs button:hover{background:#e9edfa}
+.paste-workspace{max-width:1240px;padding:24px 28px 40px;margin:auto}
+.paste-card{padding:24px}.paste-heading{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:18px}
+.paste-heading h3{margin:0;font-size:16px;font-weight:600}.paste-heading p{margin:7px 0 0;color:var(--muted);font-size:13px;line-height:1.7}
+.paste-label{display:block;font-size:13px;font-weight:600;margin-bottom:9px}
+#paste-input{display:block;width:100%;min-height:300px;resize:vertical;border:1px solid #dce2ed;border-radius:9px;background:#fafbfd;padding:16px;color:#33415b;font:13px/1.8 Consolas,"Microsoft YaHei",monospace;tab-size:18;white-space:pre;overflow:auto}
+#paste-input::placeholder{color:#929caf}#paste-input:focus-visible{outline:3px solid #bdc5ff;outline-offset:2px}
+.paste-note{color:var(--muted);font-size:12px;line-height:1.8;margin:12px 0 20px}
+.paste-actions,.paste-options,.paste-submit{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.paste-actions{justify-content:space-between;gap:16px}.paste-options>label{font-size:13px;color:#647087}.paste-options .select-control{font-size:13px;min-height:36px}
+.paste-status{font-size:13px;color:#728096;line-height:1.7;margin:18px 0 0}.paste-status.error{color:#ad3d4b}
+.paste-preview{margin-top:18px;overflow:hidden}.paste-preview .paste-heading{padding:20px 24px;margin:0}.paste-table-scroll{overflow:auto}
+.paste-preview table{width:100%;border-collapse:collapse;font-size:13px;text-align:left}.paste-preview th,.paste-preview td{padding:12px 16px;border-top:1px solid var(--line);border-right:1px solid var(--line);white-space:pre-wrap;min-width:120px;max-width:300px;overflow-wrap:anywhere}.paste-preview th{background:#f6f8fc;font-weight:600;color:#59667e}.paste-preview td{font-variant-numeric:tabular-nums}.paste-preview tbody tr:nth-child(even){background:#fcfdff}
+@media(max-width:800px){.workspace-tabs{padding:10px 12px 0}.workspace-tabs button{flex:1}.paste-workspace{padding:20px 12px}.paste-card{padding:18px}.paste-actions{align-items:stretch;flex-direction:column}.paste-submit button{flex:1}#paste-input{min-height:260px}.paste-preview .paste-heading{padding:18px}}
+[hidden]{display:none!important}
+.chart-footer{flex-wrap:wrap}#hover-status{white-space:nowrap;color:#697790}
+
+button.axis-tag{min-height:28px;padding:4px 9px;font:inherit;font-size:11px;border:1px solid transparent}
+button.axis-tag:hover{border-color:#b9c2f8;background:#eef0ff}
+#axis-dialog{width:min(600px,calc(100vw - 24px));max-height:calc(100dvh - 32px);overflow:auto}
+#axis-dialog h2{margin-top:0}#axis-dialog-help{font-size:13px;color:var(--muted);line-height:1.7}
+.axis-editor{min-width:0;margin:18px 0 0;padding:10px 14px 14px;border:1px solid var(--line);border-radius:10px}
+.axis-editor legend{padding:0 6px;font-size:14px;font-weight:600}.axis-mode{margin-left:9px;font-size:11px;font-weight:400;color:var(--muted)}
+.axis-series{font-size:12px;color:var(--muted);margin:0 0 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.axis-fields{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;gap:12px;align-items:end}
+.axis-fields label{display:grid;gap:6px;font-size:12px;color:#59667e}.axis-fields input{width:100%;min-width:0;height:36px;border:1px solid #dce2ed;border-radius:7px;padding:7px 9px;background:#fafbfd;color:#33415b;font-variant-numeric:tabular-nums}
+.axis-fields input[aria-invalid="true"]{border-color:#ad3d4b}.axis-fields button{font-size:12px}
+.axis-error{color:#ad3d4b;font-size:13px;line-height:1.6}.axis-error:empty{display:none}
+#axis-region-dialog{width:min(600px,calc(100vw - 24px));max-height:calc(100dvh - 32px);overflow:auto}
+#axis-region-help{font-size:13px;color:var(--muted);line-height:1.65}#axis-region-settings{width:100%;margin:0 0 8px}
+@media(max-width:480px){#axis-region-dialog{padding:18px}}
+#series-axis-dialog{width:min(640px,calc(100vw - 24px));max-height:calc(100dvh - 32px);overflow:auto}
+#series-axis-help{font-size:13px;color:var(--muted)}#series-axis-search{width:100%;height:34px;padding:6px 10px;border:1px solid var(--line);border-radius:7px;margin-bottom:8px}
+#series-axis-list{max-height:50vh;overflow:auto}.series-axis-row{display:grid;grid-template-columns:minmax(0,1fr) 220px;gap:12px;align-items:center;padding:9px 2px;border-bottom:1px solid var(--line)}
+.series-axis-row>span{min-width:0}.series-axis-row strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;font-weight:500}.series-axis-row small{display:block;font-size:11px;color:var(--muted);margin-top:4px}.series-axis-row select{width:100%;min-width:0}
+@media(max-width:480px){#series-axis-dialog{padding:18px}.series-axis-row{grid-template-columns:minmax(0,1fr);gap:6px}}
+.axis-dialog-actions{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-top:22px}.axis-dialog-actions>div{display:flex;gap:8px}
+@media(max-width:480px){#axis-dialog{padding:18px}.axis-fields{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.axis-fields>button{grid-column:1/-1;justify-self:end}.axis-dialog-actions{flex-wrap:wrap}.axis-dialog-actions>div{margin-left:auto}}
+
+/* Keep file actions available without a full-width header. */
+.floating-actions{position:fixed;top:12px;right:28px;z-index:20;display:flex;align-items:center;gap:4px;padding:5px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.96);box-shadow:0 4px 16px #26324714;backdrop-filter:blur(8px)}
+.floating-actions button{min-height:36px;padding:7px 10px;white-space:nowrap}
+.floating-actions .help-icon{display:none}
+.workspace-tabs{padding-right:240px}
+@media(max-width:800px){.floating-actions{top:8px;right:12px}.workspace-tabs{padding-right:224px}.workspace-tabs button{white-space:nowrap}}
+@media(max-width:600px){.floating-actions button{width:36px;padding:0}.floating-actions .action-label{display:none}.floating-actions .help-icon{display:block}.workspace-tabs{padding-right:112px;gap:4px}.workspace-tabs button{padding:12px 8px;font-size:13px}.workspace-tabs button svg{display:none}}
+
+/* Compact workspace: give the remaining viewport to the plot. */
+.config-source-heading{display:flex;align-items:center;gap:6px;margin:10px 0 2px;font-size:11px}.config-source-heading strong{font-weight:600}.config-source-heading small{color:var(--muted);font-size:10px}.config-source-heading button{margin-left:auto;padding:2px 5px;min-height:24px;font-size:11px}.config-status{font-size:10px;line-height:1.5;color:var(--muted);overflow-wrap:anywhere;margin:3px 0}.config-list .empty-list{padding:3px 1px;font-size:11px}
+.config-types{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:3px;margin:2px 0 5px}.config-types button{min-width:0;padding:4px 1px;min-height:28px;font-size:11px;white-space:nowrap}.config-types button[aria-pressed="true"]{color:var(--accent);background:#eef0ff;border-color:#bec7fa}.config-active{font-size:11px;color:var(--muted);margin:4px 0 7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#regex-settings{width:100%;margin:0 0 8px}#regex-dialog{width:min(720px,calc(100vw - 24px));max-height:calc(100dvh - 24px);overflow:auto}#regex-help{font-size:12px;line-height:1.7;color:var(--muted)}.regex-toggle{display:flex;gap:7px;align-items:center;font-size:13px}.regex-field{display:grid;gap:6px;margin-top:12px;font-size:12px}.regex-field textarea,.regex-field input{width:100%;min-width:0;padding:7px 9px;border:1px solid var(--line);border-radius:6px;color:#33415b;background:#fafbfd;font:12px/1.6 Consolas,"Microsoft YaHei",monospace}.regex-field textarea{resize:vertical}.regex-options{display:grid;grid-template-columns:130px minmax(0,1fr);gap:12px}#regex-preview{max-height:150px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;background:#f5f7fb;border-radius:6px;padding:9px;font-size:12px;line-height:1.7}
+:root{--radius:8px}
+.visually-hidden{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0}
+.workspace-tabs{height:44px;max-width:none;padding:4px 200px 4px 6px;gap:4px;align-items:center}
+.workspace-tabs button{flex:0 0 auto;height:36px;min-height:36px;padding:6px 12px;font-size:13px}
+.floating-actions{top:3px;right:6px;padding:3px;border-radius:9px}
+.floating-actions button{height:30px;min-height:30px;padding:4px 8px;font-size:12px}
+.workspace{width:100%;max-width:none;margin:0;padding:6px;gap:6px;display:grid;grid-template-columns:200px minmax(0,1fr);height:calc(100vh - 44px);height:calc(100dvh - 44px);min-height:360px}
+.workspace.sidebar-collapsed{grid-template-columns:minmax(0,1fr)}
+.sidebar{display:flex;flex-direction:column;gap:6px;min-height:0;overflow:hidden;order:0}
+.series-panel{display:flex;flex-direction:column;flex:1;min-height:140px;overflow:hidden}
+.panel-heading{padding:8px 10px}.panel-heading h2{font-size:13px}.counter{font-size:11px;padding:2px 5px}
+.search{margin:0 8px}.search svg{top:7px;left:8px}.search input{height:30px;padding:5px 8px 5px 29px;font-size:12px}
+.list-tools{padding:4px 9px}.list-tools span{gap:8px}
+.series-list{flex:1;max-height:none;min-height:0;padding:0 4px 4px}
+.series-item{padding:5px 6px;gap:6px;border-radius:5px;align-items:center}.series-item+.series-item{margin-top:0}
+.series-item input{width:14px;height:14px;margin:0}.series-name{gap:6px;min-height:18px}.series-name strong{font-size:12px}.series-name .swatch{width:10px}.series-meta{display:none}
+.config-panel{flex:none;min-height:0;max-height:50%;overflow:auto}.config-panel>summary{cursor:pointer;list-style:none}.config-panel>summary::-webkit-details-marker{display:none}.config-panel>summary::after{content:'›';font-size:18px;color:var(--muted)}.config-panel[open]>summary::after{transform:rotate(90deg)}.config-panel .counter{margin-left:auto}
+.config-body{padding:0 8px 8px}.config-field input{padding:6px 8px;font-size:12px}.config-field button{min-height:30px;width:30px;padding:4px}
+.config-list{gap:4px;margin:6px 0;max-height:120px}.config-choice{min-height:28px;padding:4px;font-size:12px}.config-actions{gap:4px}.config-actions button{padding:4px;min-height:28px;font-size:11px}
+.main{display:flex;flex-direction:column;min-height:0;min-width:0;gap:4px;order:0}
+.chart-panel{display:flex;flex-direction:column;flex:1;min-height:0}
+.chart-toolbar{flex-direction:row;align-items:center;flex-wrap:wrap;justify-content:flex-start;gap:5px;padding:4px 6px}
+#toggle-sidebar{width:30px;height:30px;min-height:30px;padding:5px;flex-shrink:0}
+.chart-controls{width:auto;min-width:0;gap:4px;flex-wrap:wrap}.chart-controls button,.chart-controls select{min-height:28px;font-size:12px}.chart-controls button{padding:4px 7px}.chart-controls select{max-width:135px;padding-top:4px;padding-bottom:4px}
+#hover-status{font-size:11px;margin-left:auto;color:#7c8798}
+.axis-legend{flex-shrink:0;padding:0 6px 3px;gap:4px;min-height:0;max-height:36px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:thin}.axis-legend .axis-caption{display:none}
+button.axis-tag{flex-shrink:0;min-height:23px;padding:2px 6px;white-space:nowrap;font-size:10px}
+.chart-scroll{flex:1;min-height:0;overflow:auto}.plot-wrap{height:100%;min-height:280px}.chart{height:100%}
+.chart-empty{padding:0 12px;font-size:13px}.notice{flex-shrink:0;margin:0;padding:5px 8px;max-height:64px;overflow:auto;font-size:11px}
+.paste-workspace{max-width:none;padding:8px}.paste-card{padding:12px}.paste-heading{margin-bottom:10px}.paste-heading h3{font-size:14px}.paste-heading p{margin-top:4px;font-size:12px}.paste-label{margin-bottom:6px}.paste-note{margin:8px 0 10px}.paste-status{margin-top:10px}.paste-preview{margin-top:8px}.paste-preview .paste-heading{padding:10px 12px}
+@media(max-width:800px){.workspace{position:relative;grid-template-columns:minmax(0,1fr)}.sidebar{position:absolute;top:42px;bottom:6px;left:6px;width:216px;z-index:15;padding:6px;background:#f4f6fa;border:1px solid var(--line);border-radius:8px;box-shadow:4px 5px 20px #26324726}.main{grid-column:1;grid-row:1}.chart-toolbar{gap:4px}#hover-status{font-size:10px}}
+@media(max-width:600px){.workspace-tabs{padding-right:88px}.workspace-tabs button{padding:6px 8px}.floating-actions button{width:30px;padding:0}.workspace{padding:4px;gap:4px}.chart-controls{gap:3px}.chart-controls button{padding:4px 6px}.chart-controls select{max-width:120px}#hover-status{line-height:18px}}
+</style>
+</head>
+<body>
+  <svg hidden xmlns="http://www.w3.org/2000/svg"><defs>
+    <symbol id="icon-chart" viewBox="0 0 24 24"><path d="M3 18V5m0 13h18M5 14l4-6 4 5 6-9"/></symbol>
+    <symbol id="icon-upload" viewBox="0 0 24 24"><path d="M12 16V3m-5 5 5-5 5 5M4 15v5a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-5"/></symbol>
+    <symbol id="icon-file" viewBox="0 0 24 24"><path d="M14 3H5v18h14V8Zm0 0v5h5M8 12h8M8 16h5"/></symbol>
+    <symbol id="icon-search" viewBox="0 0 24 24"><circle cx="10" cy="10" r="6.5"/><path d="m15 15 5 5"/></symbol>
+    <symbol id="icon-save" viewBox="0 0 24 24"><path d="M5 3h12l4 4v14H3V3Zm2 0v6h10V3M7 21v-8h10v8"/></symbol>
+    <symbol id="icon-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 4 2c-1 .7-1.5 1-1.5 2.5M12 17h.01"/></symbol>
+    <symbol id="icon-reset" viewBox="0 0 24 24"><path d="M4 10a8 8 0 1 1 1 7M4 4v6h6"/></symbol>
+    <symbol id="icon-cursor" viewBox="0 0 24 24"><path d="m4 3 5 17 3-7 7-3Z"/></symbol>
+    <symbol id="icon-sidebar" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16M5.5 8h1M5.5 12h1M5.5 16h1"/></symbol>
+    <symbol id="icon-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/></symbol>
+  </defs></svg>
+  <div class="floating-actions" role="group" aria-label="数据操作">
+    <button id="help-top" class="subtle" aria-label="使用说明" title="使用说明"><svg class="help-icon" aria-hidden="true"><use href="#icon-help"/></svg><span class="action-label">使用说明</span></button>
+    <button id="upload-button" class="primary" aria-label="上传数据" title="上传 Excel、CSV、JSON、TXT、PMSD 数据"><svg aria-hidden="true"><use href="#icon-upload"/></svg><span class="action-label">上传数据</span></button>
+  </div>
+  <nav class="workspace-tabs" role="tablist" aria-label="工作区">
+    <button id="tab-view" role="tab" aria-selected="true" aria-controls="view-panel" tabindex="0"><svg><use href="#icon-chart"/></svg>曲线查看</button>
+    <button id="tab-paste" role="tab" aria-selected="false" aria-controls="paste-panel" tabindex="-1"><svg><use href="#icon-grid"/></svg>粘贴数据</button>
+  </nav>
+  <div id="view-panel" class="workspace" role="tabpanel" aria-labelledby="tab-view">
+    <aside id="series-sidebar" class="sidebar" aria-label="序列与配置">
+      <section class="panel series-panel"><div class="panel-heading"><h2>序列</h2><span class="counter" id="selection-count">0 / 0</span></div><div class="search"><svg><use href="#icon-search"/></svg><input id="series-search" type="search" placeholder="搜索序列名称" aria-label="搜索序列名称"></div><div class="list-tools"><div id="series-count">全部序列</div><span><button id="select-all">全选</button><button id="select-none">清空</button></span></div><div id="series-list" class="series-list" aria-label="可选序列"></div></section>
+      <details class="panel config-panel"><summary class="panel-heading"><h2>分类配置</h2><span id="config-count" class="counter">0</span></summary><div class="config-body">
+        <div class="config-types" role="group" aria-label="配置分类"><button id="config-tab-axes" aria-pressed="false">坐标轴</button><button id="config-tab-regex" aria-pressed="false">标题正则</button><button id="config-tab-selection" aria-pressed="true">勾选序列</button></div>
+        <p id="config-active" class="config-active">当前：未选择</p>
+        <button id="axis-region-settings" title="设置各坐标组在绘图区的起始和终止百分比" hidden>坐标区域</button><button id="regex-settings" hidden>编辑标题规则</button>
+        <div class="config-field"><input id="config-name" maxlength="120" placeholder="勾选序列配置名称" aria-label="配置名称"><button id="save-config" class="primary" aria-label="保存当前分类到本地 IndexedDB" title="保存到本地，同类同名更新"><svg><use href="#icon-save"/></svg></button></div>
+        <div class="config-source-heading"><strong>本地配置</strong><button id="export-configs" title="导出本地同类型的全部配置到一个 JSON 文件">导出</button></div><p id="config-storage-status" class="config-status" role="status">正在读取本地配置…</p>
+        <div id="config-list" class="config-list" aria-label="当前分类的本地配置"></div><div class="config-actions"><button id="import-config"><svg><use href="#icon-upload"/></svg>导入到本地</button></div>
+        <div class="config-source-heading"><strong>云端配置</strong><small>只读</small><button id="refresh-cloud" title="重新读取固定 configs 目录中的配置" aria-label="刷新云端配置">刷新</button></div><p id="cloud-config-status" class="config-status" role="status">正在读取云端配置…</p>
+        <div id="cloud-config-list" class="config-list" aria-label="当前分类的只读云端配置"></div>
+      </div></details>
+    </aside>
+    <main class="main">
+      <section class="panel chart-panel"><div class="chart-toolbar"><button id="toggle-sidebar" aria-controls="series-sidebar" aria-expanded="true" aria-label="收起序列与配置" title="收起序列与配置"><svg aria-hidden="true"><use href="#icon-sidebar"/></svg></button><span id="chart-subtitle" class="visually-hidden">等待上传或粘贴数据</span><div class="chart-controls"><select id="sheet-select" class="select-control" aria-label="工作表"></select><select id="time-mode" class="select-control" aria-label="时间格式"><option value="auto">时间格式：自动</option><option value="excel">Excel 日期数值</option><option value="date">日期 / 时分秒</option><option value="number">数值时间</option><option value="unix-s">Unix 时间戳（秒）</option><option value="unix-ms">Unix 时间戳（毫秒）</option><option value="text">文本 / 原始顺序</option></select><button id="series-axis-settings" title="为每条曲线指定坐标组">曲线坐标</button><button id="axis-settings" title="调整纵坐标轴上下限">坐标范围</button><button id="reset-zoom"><svg><use href="#icon-reset"/></svg>重置视图</button><button id="clear-data" title="清空当前数据、粘贴内容和曲线标记">清空数据</button></div><span id="hover-status" role="status" title="Ctrl + 左键切换跟随；Ctrl + 右键切换标签；Ctrl + 滚轮缩放">跟随：关 · 标签：开</span></div><div id="axis-legend" class="axis-legend"></div><div class="chart-scroll"><div id="plot-wrap" class="plot-wrap"><div id="chart" class="chart" role="img" aria-label="多坐标轴时间序列曲线图" aria-describedby="chart-subtitle time-summary"></div><div id="chart-empty" class="chart-empty" hidden>勾选左侧序列，开始查看曲线</div><div id="cursor-line" class="cursor-line" hidden></div><div id="cursor-label" class="cursor-label" hidden></div><div id="hover-card" class="hover-card" hidden></div></div></div></section>
+      <span id="time-summary" class="visually-hidden">—</span><div class="notice" id="data-notice" role="status" hidden></div>
+    </main>
+  </div>
+  <main id="paste-panel" class="paste-workspace" role="tabpanel" aria-labelledby="tab-paste" hidden>
+    <section class="panel paste-card">
+      <div class="paste-heading"><div><h3>粘贴表格数据</h3><p id="paste-help">第一行为列名，第一列为时间，第二列起为数值。支持空单元格和多行单元格。</p></div><span class="counter">Ctrl + V</span></div>
+      <label class="paste-label" for="paste-input">Excel 数据</label>
+      <textarea id="paste-input" wrap="off" spellcheck="false" aria-describedby="paste-help paste-format-note" placeholder="点击这里，按 Ctrl + V 粘贴从 Excel 复制的数据区域（含列名）"></textarea>
+      <p id="paste-format-note" class="paste-note">按单元格中显示的文本读取。日期请复制为完整日期或时分秒；显示为 #### 的时间需先加宽 Excel 列。测量列请使用不带千位分隔符、单位或百分号的数值；空白或非数值显示为断点。</p>
+      <div class="paste-actions"><div class="paste-options"><label for="paste-time-mode">时间格式</label><select id="paste-time-mode" class="select-control"></select><button id="paste-clear" class="subtle">清空</button></div><div class="paste-submit"><button id="paste-preview-button">预览数据</button><button id="paste-load" class="primary"><svg><use href="#icon-chart"/></svg>载入曲线</button></div></div>
+      <p id="paste-status" class="paste-status" role="status" aria-live="polite">粘贴后可先预览，再载入曲线。支持最多 250,000 行数据、512 列。</p>
+    </section>
+    <section id="paste-preview" class="panel paste-preview" aria-label="粘贴数据预览" hidden><div class="paste-heading"><div><h3>数据预览</h3><p id="paste-preview-summary"></p></div></div><div class="paste-table-scroll"><table id="paste-preview-table"></table></div></section>
+  </main>
+  <dialog id="regex-dialog" aria-labelledby="regex-title" aria-describedby="regex-help">
+    <form id="regex-form" novalidate>
+      <h2 id="regex-title">标题正则规则</h2>
+      <p id="regex-help">从原始列名处理，不重复处理已改名的标题。填写正则本体（无需两侧斜杠），替换支持 $1、$2 等分组。未匹配或结果为空时保留原名。应用后可在“标题正则”分类中独立保存。</p>
+      <label class="regex-toggle"><input id="regex-enabled" type="checkbox">启用标题处理</label>
+      <label class="regex-field" for="regex-pattern">匹配表达式<textarea id="regex-pattern" rows="3" maxlength="1000" spellcheck="false" aria-describedby="regex-error"></textarea></label>
+      <div class="regex-options"><label class="regex-field" for="regex-flags">标志（g i m s u）<input id="regex-flags" maxlength="5" spellcheck="false"></label><label class="regex-field" for="regex-replacement">替换表达式<input id="regex-replacement" maxlength="1000" spellcheck="false"></label></div>
+      <label class="regex-field" for="regex-sample">原始标题预览（每行一个）<textarea id="regex-sample" rows="3" maxlength="12000" spellcheck="false" placeholder="粘贴原始标题以检查处理结果"></textarea></label>
+      <pre id="regex-preview" aria-live="polite"></pre><p id="regex-error" class="axis-error" role="alert"></p>
+      <div class="axis-dialog-actions"><button id="regex-reset" type="button" class="subtle">恢复默认规则</button><div><button id="regex-cancel" type="button">取消</button><button id="regex-apply" type="submit" class="primary">应用</button></div></div>
+    </form>
+  </dialog>
+  <dialog id="axis-region-dialog" aria-labelledby="axis-region-title" aria-describedby="axis-region-help">
+    <form id="axis-region-form" novalidate>
+      <h2 id="axis-region-title">坐标区域</h2>
+      <p id="axis-region-help">从绘图区顶部向下计算，0% 为顶部、100% 为底部。每组起始比例须小于终止比例，各组可以重叠。点击“应用”生效，再保存坐标轴配置以便复用。</p>
+      <div id="axis-region-fields"></div>
+      <p id="axis-region-error" class="axis-error" role="alert"></p>
+      <div class="axis-dialog-actions"><button id="axis-region-reset-all" type="button" class="subtle">全部恢复默认</button><div><button id="axis-region-cancel" type="button">取消</button><button type="submit" class="primary">应用</button></div></div>
+    </form>
+  </dialog>
+  <dialog id="series-axis-dialog" aria-labelledby="series-axis-title" aria-describedby="series-axis-help">
+    <form id="series-axis-form">
+      <h2 id="series-axis-title">曲线坐标系</h2>
+      <p id="series-axis-help">为每条曲线选择坐标组；自动匹配按数据范围分组。分配不会改变曲线的勾选状态，点击“应用”生效。</p>
+      <input id="series-axis-search" type="search" placeholder="搜索曲线名称" aria-label="搜索待分配的曲线">
+      <div id="series-axis-list"></div>
+      <div class="axis-dialog-actions"><button id="series-axis-reset" type="button" class="subtle">全部自动匹配</button><div><button id="series-axis-cancel" type="button">取消</button><button type="submit" class="primary">应用</button></div></div>
+    </form>
+  </dialog>
+  <dialog id="axis-dialog" aria-labelledby="axis-dialog-title" aria-describedby="axis-dialog-help">
+    <form id="axis-form" novalidate>
+      <h2 id="axis-dialog-title">坐标范围</h2>
+      <p id="axis-dialog-help">自动范围按 configs/axes.json 中的默认拓宽比例与取整规则计算。可手动修改上下限，或恢复自动；超出范围的部分将隐藏。区域占比可在“分类配置 → 坐标轴 → 坐标区域”调整。</p>
+      <div id="axis-fields"></div>
+      <p id="axis-error" class="axis-error" role="alert"></p>
+      <div class="axis-dialog-actions"><button id="axis-reset-all" type="button" class="subtle">全部恢复自动</button><div><button id="axis-cancel" type="button">取消</button><button id="axis-apply" type="submit" class="primary">应用</button></div></div>
+    </form>
+  </dialog>
+  <input id="data-input" type="file" accept=".xlsx,.xls,.xlsm,.xlsb,.xltx,.xltm,.xlt,.xlw,.xml,.csv,.json,.txt,.pmsd" hidden><input id="config-input" type="file" accept=".json,application/json" multiple hidden>
+  <div class="drop-overlay" id="drop-overlay" hidden>松开以导入文件<small>支持 Excel、CSV、JSON、TXT、PMSD 数据文件或 JSON 显示配置</small></div><div id="loading" class="loading" hidden><span>正在处理…</span></div><div id="toast" class="toast" role="status" hidden></div>
+  <dialog id="help-dialog"><h2>使用说明</h2><p>打开网站后自动读取同目录 configs 中的云端配置；网站需保留同目录下的 vendor 文件夹。上传的数据在浏览器内处理。点击“上传数据”或将文件拖入页面，支持 Excel、CSV、JSON、TXT、PMSD。CSV/TXT 使用制表符、逗号或分号分列，第一行填写列名。</p><p>数据 JSON 支持对象数组（每条记录包含时间和各序列）、带首行列名的二维数组，或 {"columns":[列名],"data":[数据行]}。TXT 按表格文本读取。Excel 表格可通过“粘贴数据”标签载入。</p><p>Excel 支持 .xlsx、.xls、.xlsm、.xlsb、.xltx、.xltm、.xlt、.xlw 以及 Excel 2003 XML（.xml）。可切换工作表，保持原始行顺序；日期数值可按单元格格式自动识别，公式读取文件中保存的计算结果。含宏文件仅提取表格数据，不执行宏。加密文件请先另存为不带打开密码的副本。</p><p>PMSD 可直接导入已支持的 PMSAMPLE v2 采样结构，自动读取字段名称、单位和数值，并识别可选 END1 文件结束块；无效采样保留断点，损坏或不支持的文件会提示并保留原图。建议保留原始文件名，以便结合文件头推断原时区；无法识别时按浏览器本地时区显示并提示。时间显示至毫秒，多个分片不自动合并。</p><p>标题默认规则由 configs/regex.json 的 defaults.headerRule 定义，上传和粘贴均适用。可在“标题正则”中编辑；“恢复默认规则”使用当前已读取的 JSON 默认值。</p><p>第一行为名称，第一列为时间，其余列为数值。数值时间、Excel 日期、日期文本、时分秒均可识别；纯数值默认作为数值时间，Unix 时间戳请手动选择单位。日期按表格中的时间显示，带时区的 ISO 时间统一转为 UTC。数据保持原始行顺序，不按时间排序，曲线按原始行顺序连接。数值或日期横轴仍使用实际时间坐标；时间回退时曲线会向左连接。重复时间保留原行，悬浮时显示最近时间点中最先出现的一条记录。</p><p>每个序列按完整数据的最大最小值，匹配 configs/axes.json 中的默认坐标组；该文件同时定义各组默认区域比例及自动上下限的拓宽、取整规则。同组共用坐标轴，实际自动范围按已勾选曲线的数据计算。点击“曲线坐标”可逐条指定坐标组，点击“坐标范围”可设置手动上下限或恢复自动。手动范围可能隐藏超出部分，原始数据不变；时间横轴通过底部滑块或 Ctrl + 滚轮调整。</p><p>左侧“分类配置”分为坐标轴、标题正则、勾选序列三类，各自保存、导入、切换并记住最后选择。坐标轴配置保存时间格式、纵轴上下限、曲线分组及区域比例；勾选序列配置仅保存选择和颜色；标题正则配置仅保存标题处理规则。输入名称后点击保存，写入本地 IndexedDB，不会下载文件。同一分类同名会更新，不同分类可同名。本地列表可删除单项；云端列表只读，不提供删除。切换一类不会覆盖其他两类；旧版合并配置导入后自动拆为坐标轴与勾选序列两份。</p><p>“导出”将当前类型的 defaults 默认值和全部本地配置 configs 保存到一个 JSON 文档：axes.json、regex.json 或 selection.json。手动替换项目 configs 目录中对应文件后即可更新云端配置。导出不自动合并已有云端项，需保留时先导入到本地。选中云端项再保存会生成或更新本地副本，不会改写云端文件。</p><p>打开或刷新网页时自动读取相对路径 ./configs/ 下的 axes.json、regex.json、selection.json，无需选择文件夹。更新网站中的 JSON 后，点击“云端配置”标题右侧的“刷新”，即可重新读取。各分类分别记住最后选择与来源，原浏览器配置会一次性迁移到 IndexedDB。更换浏览器、打开地址或清理站点数据会影响本地配置，请用导出功能备份。</p><p>在“标题正则”中点击“编辑标题规则”，可修改正则、标志和替换表达式，用 $1、$2 引用捕获分组，并预览原始标题的处理结果。可停用或恢复默认规则。无匹配或替换后为空时保留原名；无效表达式不会应用。每次从原始列名处理，修改规则不会改变数据、当前勾选或坐标分配。点击应用后，再在标题正则分类中命名保存。</p><p>“坐标轴”分类中的“坐标区域”可设置每组起始、终止百分比（从顶部向下计 0～100%），支持小数、重叠与恢复默认。勾选序列配置按列名及同名出现次序匹配，新配置同时保存原始列名以便跨标题规则复用。上传或“导入到本地”可识别三类 JSON，自动归类；只导入不自动应用。数据文件不包含在配置内。</p><p>曲线区域随窗口大小自动铺满。点击工具栏左侧的侧栏按钮，可收起或展开序列与配置；分类配置默认折叠，点击标题展开。序列数值范围可将鼠标停留在名称上查看。</p><p>在曲线绘图区按 Ctrl + 鼠标左键开启虚线跟随，松开 Ctrl 后移动鼠标即可查看最近时间点；再次按 Ctrl + 左键固定当前位置。Ctrl + 鼠标右键显示或隐藏时间标签和数值框，保留虚线。鼠标移出绘图区后保留最后位置，重新进入后按当前跟随开关继续；普通右键仍打开浏览器菜单。新数据载入时清除旧标记。</p><p>加载数据时只勾选最后一次选择的勾选序列配置中能匹配的序列，未匹配的保持不选；没有选过配置时使用 configs/selection.json 中的 defaults.selectedSeries；交付默认值为空，不勾选任何曲线。可以先选配置再加载数据。点击“清空数据”清除当前曲线、粘贴内容和标记，保留三类配置列表及各自最后的选择。</p><p>数据不离开本机。单文件上限 50 MB，单表最多 250,000 行、512 列；较大数据建议减少同时显示的序列。</p><div class="dialog-actions"><button id="close-help" class="primary">知道了</button></div></dialog>
+  <script src="vendor/jszip.min.js"></script>
+  <script src="vendor/xlsx.full.min.js"></script>
+  <script>/* Local data adapters. Excel parsing: SheetJS CE (Apache-2.0); ZIP handling: JSZip (MIT). */
+(function (root, factory) {
+  const api = factory(root);
+  if (typeof module === 'object' && module.exports) module.exports = api;
+  else root.SheetReader = api;
+})(typeof globalThis !== 'undefined' ? globalThis : this, function (root) {
+  'use strict';
+  function encode_cell({ r, c }) { let s = ''; for (c++; c; c = Math.floor((c - 1) / 26)) s = String.fromCharCode(65 + (c - 1) % 26) + s; return s + (r + 1); }
+  function decode_cell(s) { const m = /^([A-Z]+)(\d+)$/i.exec(s); if (!m) throw new Error('Excel 单元格地址无效'); let c = 0; for (const ch of m[1].toUpperCase()) c = c * 26 + ch.charCodeAt(0) - 64; return { r: +m[2] - 1, c: c - 1 }; }
+  function decode_range(s) { const [a, b = a] = s.split(':'); return { s: decode_cell(a), e: decode_cell(b) }; }
+  function aoa_to_sheet(rows) {
+    const sheet = {}; let maxCol = 0;
+    rows.forEach((row, r) => row.forEach((v, c) => { maxCol = Math.max(maxCol, c); if (v !== null && v !== undefined) sheet[encode_cell({ r, c })] = { v, t: typeof v === 'number' ? 'n' : typeof v === 'boolean' ? 'b' : 's' }; }));
+    if (rows.length) sheet['!ref'] = `A1:${encode_cell({ r: rows.length - 1, c: maxCol })}`;
+    return sheet;
+  }
+  function sheet_to_json(sheet, options = {}) {
+    if (!sheet['!ref']) return [];
+    const range = options.range || decode_range(sheet['!ref']), rows = [];
+    for (let r = range.s.r; r <= range.e.r; r++) { const row = []; for (let c = range.s.c; c <= range.e.c; c++) row.push(sheet[encode_cell({ r, c })]?.v ?? options.defval ?? null); rows.push(row); }
+    return rows;
+  }
+  const utils = { encode_cell, decode_cell, decode_range, aoa_to_sheet, sheet_to_json, book_new: () => ({ SheetNames: [], Sheets: {} }), book_append_sheet: (wb, sheet, name) => { wb.SheetNames.push(name); wb.Sheets[name] = sheet; } };
+  function parse_date_code(n, options = {}) {
+    if (!Number.isFinite(n) || n < 0 || n > 2958465) return null;
+    let whole = Math.floor(n), ms = Math.round((n - whole) * 86400000);
+    const epoch = options.date1904 ? Date.UTC(1904, 0, 1) : Date.UTC(1899, 11, 31);
+    if (!options.date1904 && whole >= 60) whole--; // Excel's historical 1900 leap-year convention.
+    const d = new Date(epoch + whole * 86400000 + ms);
+    return { y: d.getUTCFullYear(), m: d.getUTCMonth() + 1, d: d.getUTCDate(), H: d.getUTCHours(), M: d.getUTCMinutes(), S: d.getUTCSeconds(), u: d.getUTCMilliseconds() / 1000 };
+  }
+  const SSF = { parse_date_code, is_date: z => /[ymdhis]/i.test(String(z).replace(/"[^"]*"|\\.|\[(?![hms]+\])[^\]]*\]/gi, '')) };
+  function xml(text) { const doc = new DOMParser().parseFromString(text, 'application/xml'); if (doc.getElementsByTagName('parsererror').length) throw new Error('Excel XML 内容损坏'); return doc; }
+  function elements(parent, name) { return Array.from(parent.getElementsByTagNameNS('*', name)); }
+  function textRuns(parent) { return elements(parent, 't').map(t => t.textContent).join(''); }
+  function normalizePath(base, target) {
+    const parts = (target.startsWith('/') ? target.slice(1) : base + target).split('/'), out = [];
+    for (const part of parts) { if (part === '..') out.pop(); else if (part && part !== '.') out.push(part); }
+    return out.join('/');
+  }
+  function detectDelimiter(text) {
+    const counts = new Map([['\t', 0], [',', 0], [';', 0]]);
+    let quoted = false;
+    for (let i = 0; i < text.length; i++) {
+      const ch = text[i];
+      if (ch === '"') { if (quoted && text[i + 1] === '"') i++; else quoted = !quoted; }
+      else if (!quoted && (ch === '\n' || ch === '\r')) break;
+      else if (!quoted && counts.has(ch)) counts.set(ch, counts.get(ch) + 1);
+    }
+    return counts.get('\t') ? '\t' : counts.get(';') > counts.get(',') ? ';' : ',';
+  }
+  function parseCSV(text, delimiter, limits = {}) {
+    text = text.replace(/^\uFEFF/, '');
+    delimiter ??= detectDelimiter(text);
+    const rows = []; let row = [], field = '', quoted = false;
+    function pushField() {
+      if (row.length >= (limits.columns ?? Infinity)) throw new Error('最多支持 512 列，请缩小数据范围。');
+      row.push(field); field = '';
+    }
+    function pushRow() {
+      if (rows.length >= (limits.rows ?? Infinity)) throw new Error('最多支持 250,000 行数据，请拆分数据。');
+      rows.push(row); row = [];
+    }
+    for (let i = 0; i < text.length; i++) {
+      const ch = text[i];
+      if (ch === '"') { if (quoted && text[i + 1] === '"') { field += '"'; i++; } else if (!field || quoted) quoted = !quoted; else field += ch; }
+      else if (ch === delimiter && !quoted) pushField();
+      else if ((ch === '\r' || ch === '\n') && !quoted) { if (ch === '\r' && text[i + 1] === '\n') i++; pushField(); pushRow(); }
+      else field += ch;
+    }
+    if (quoted) throw new Error('表格中的引号未闭合，请重新复制完整的单元格区域。');
+    if (field || row.length) { pushField(); pushRow(); }
+    return rows;
+  }
+  function readPasted(text) {
+    if (typeof text !== 'string' || !text.trim()) throw new Error('请先粘贴从 Excel 复制的表格数据。');
+    const maxBytes = 50 * 1024 * 1024;
+    if (text.length > maxBytes || new TextEncoder().encode(text).length > maxBytes) throw new Error('粘贴内容超过 50 MB，请缩小复制范围。');
+    // Excel clipboard text is TSV. Force tabs so punctuation in headers is preserved.
+    const rows = parseCSV(text, '\t', { rows: 250001, columns: 512 });
+    if (rows.length < 2 || rows[0].length < 2) throw new Error('请复制包含列名和数据的至少两列：第一列为时间，其余列为数值。');
+    const extra = rows.findIndex((row, index) => index > 0 && row.length > rows[0].length);
+    if (extra >= 0) throw new Error(`第 ${extra + 1} 行的列数多于首行，请连同全部列名重新复制。`);
+    const wb = utils.book_new();
+    utils.book_append_sheet(wb, aoa_to_sheet(rows), '粘贴数据');
+    return wb;
+  }
+  function decodeText(bytes) {
+    const data = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes);
+    if (data.length > 50 * 1024 * 1024) throw new Error('文件超过 50 MB，请拆分数据。');
+    if ((data[0] === 0x50 && data[1] === 0x4b) || (data[0] === 0xd0 && data[1] === 0xcf)) throw new Error('此文件含二进制表格或压缩内容，请保留原始 Excel 扩展名上传，不能只修改扩展名。');
+    let text;
+    if (data[0] === 0xff && data[1] === 0xfe) text = new TextDecoder('utf-16le').decode(data);
+    else if (data[0] === 0xfe && data[1] === 0xff) text = new TextDecoder('utf-16be').decode(data);
+    else {
+      try { text = new TextDecoder('utf-8', { fatal: true }).decode(data); }
+      catch { text = new TextDecoder('gb18030', { fatal: true }).decode(data); }
+    }
+    text = text.replace(/^\uFEFF/, '');
+    if (text.includes('\u0000')) throw new Error('文件不是可识别的文本，请使用 UTF-8、GBK 或带 BOM 的 UTF-16 编码。');
+    return text;
+  }
+  function tableWorkbook(rows) {
+    if (!Array.isArray(rows) || rows.length < 2 || !Array.isArray(rows[0]) || rows[0].length < 2) throw new Error('数据需要首行列名和至少一行记录，第一列为时间，其余列为数值。');
+    if (rows.length > 250001) throw new Error('最多支持 250,000 行数据，请拆分文件。');
+    const width = rows[0].length;
+    if (width > 512) throw new Error('最多支持 512 列，请缩小数据范围。');
+    rows.forEach((row, index) => {
+      if (!Array.isArray(row)) throw new Error(`第 ${index + 1} 行必须是数组。`);
+      if (row.length > width) throw new Error(`第 ${index + 1} 行的列数多于列名，请补齐首行列名。`);
+      for (const cell of row) if (cell !== null && !['string', 'number', 'boolean'].includes(typeof cell)) throw new Error(`第 ${index + 1} 行含有嵌套对象或数组，单元格应为文本、数字或 null。`);
+    });
+    const workbook = utils.book_new();
+    utils.book_append_sheet(workbook, aoa_to_sheet(rows), '数据');
+    return workbook;
+  }
+  function jsonTable(value) {
+    if (value?.schema === 'curve-viewer' || value?.schema === 'curve-viewer-bundle' || (Array.isArray(value) && value.length && value.every(item => item?.schema === 'curve-viewer'))) {
+      const error = new Error('这是显示配置 JSON，请导入到配置列表。'); error.code = 'DISPLAY_CONFIG'; throw error;
+    }
+    if (value && !Array.isArray(value) && Array.isArray(value.columns) && Array.isArray(value.data)) {
+      if (value.data.length > 250000) throw new Error('最多支持 250,000 行数据，请拆分文件。');
+      return [value.columns].concat(value.data);
+    }
+    if (!Array.isArray(value) || !value.length) throw new Error('JSON 需为非空对象数组、带列名的二维数组，或包含 columns 和 data 的对象。');
+    if (Array.isArray(value[0])) return value;
+    if (value.length > 250000) throw new Error('最多支持 250,000 行数据，请拆分文件。');
+    const names = new Set();
+    for (const row of value) {
+      if (!row || typeof row !== 'object' || Array.isArray(row)) throw new Error('JSON 对象数组中的每一项都必须是一条记录对象。');
+      for (const key of Object.keys(row)) { names.add(key); if (names.size > 512) throw new Error('最多支持 512 列，请缩小数据范围。'); }
+    }
+    const columns = [...names];
+    const timeIndex = columns.findIndex(name => /^(时间|time|timestamp|datetime|date)$/i.test(name.trim()));
+    if (timeIndex > 0) columns.unshift(...columns.splice(timeIndex, 1));
+    return [columns].concat(value.map(row => columns.map(name => Object.prototype.hasOwnProperty.call(row, name) ? row[name] : null)));
+  }
+  const pmsdCRCTable = Uint32Array.from({ length: 256 }, (_, value) => {
+    for (let bit = 0; bit < 8; bit++) value = value & 1 ? 0xedb88320 ^ (value >>> 1) : value >>> 1;
+    return value >>> 0;
+  });
+  function pmsdCRC(data, start, end) {
+    let crc = 0xffffffff;
+    for (let i = start; i < end; i++) crc = pmsdCRCTable[(crc ^ data[i]) & 255] ^ (crc >>> 8);
+    return (crc ^ 0xffffffff) >>> 0;
+  }
+  function pmsdTimeZone(filename, startMs) {
+    // The observed format stores Unix nanoseconds but no explicit time-zone field.
+    // Original filenames contain the local recording start, independently checked against the header.
+    const match = /_(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})_(\d{3})(?:_|\.pmsd$)/i.exec(filename);
+    if (match) {
+      const [, y, mo, d, h, m, s, ms] = match.map(Number);
+      const local = Date.UTC(y, mo - 1, d, h, m, s, ms), date = new Date(local);
+      const offset = Math.round((local - startMs) / 60000);
+      if (date.getUTCFullYear() === y && date.getUTCMonth() === mo - 1 && date.getUTCDate() === d && h < 24 && m < 60 && s < 60 &&
+        Math.abs(offset) <= 840 && Math.abs(local - startMs - offset * 60000) <= 1000) return { offset, source: 'filename' };
+    }
+    return { offset: null, source: 'local' };
+  }
+  function pmsdTime(ms, zone) {
+    if (zone.offset !== null) return new Date(ms + zone.offset * 60000).toISOString().slice(0, 23).replace('T', ' ');
+    const date = new Date(ms), pad = (n, length = 2) => String(n).padStart(length, '0');
+    return `${pad(date.getFullYear(), 4)}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}.${pad(date.getMilliseconds(), 3)}`;
+  }
+  function readPMSD(bytes, filename) {
+    const data = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes);
+    if (data.length > 50 * 1024 * 1024) throw new Error('文件超过 50 MB，请拆分数据。');
+    const view = new DataView(data.buffer, data.byteOffset, data.byteLength);
+    const signature = (at, text) => Array.from(text).every((char, i) => data[at + i] === char.charCodeAt(0));
+    if (data.length < 52 || !signature(0, 'PMSAMPLE')) throw new Error('不是支持的 PMSD 采样文件，文件头应为 PMSAMPLE。');
+    if (view.getUint16(8, true) !== 2 || view.getUint16(10, true) !== 3) throw new Error('暂不支持此 PMSD 版本或存储方式，目前支持 PMSAMPLE v2 / 标志 3。');
+    const headerEnd = view.getUint32(12, true), count = view.getUint32(16, true);
+    if (count < 1 || count > 511) throw new Error('PMSD 需要 1～511 个数据列（含时间列最多 512 列）。');
+    if (headerEnd < 52 || headerEnd > data.length) throw new Error('PMSD 文件头长度无效或文件不完整。');
+    if (pmsdCRC(data, 32, headerEnd) !== view.getUint32(28, true)) throw new Error('PMSD 字段信息校验失败，文件可能损坏。');
+    const decoder = new TextDecoder('utf-8', { fatal: true }), fields = [];
+    let position = 52;
+    function readString() {
+      if (position + 2 > headerEnd) throw new Error('PMSD 字段信息不完整。');
+      const length = view.getUint16(position, true); position += 2;
+      if (position + length > headerEnd) throw new Error('PMSD 字段文本长度无效。');
+      let value;
+      try { value = decoder.decode(data.subarray(position, position + length)); } catch { throw new Error('PMSD 字段名称不是有效的 UTF-8 文本。'); }
+      position += length; return value;
+    }
+    for (let i = 0; i < count; i++) {
+      if (position + 6 > headerEnd) throw new Error('PMSD 字段信息不完整。');
+      const index = view.getUint16(position, true), id = view.getUint32(position + 2, true); position += 6;
+      if (index !== i) throw new Error('暂不支持此 PMSD 字段索引结构。');
+      fields.push({ id, model: readString(), device: readString(), name: readString(), unit: readString(), type: readString() });
+    }
+    if (position !== headerEnd) throw new Error('PMSD 文件头包含未识别的信息，未载入数据。');
+    const zone = pmsdTimeZone(filename, Number(view.getBigInt64(20, true) / 1000000n));
+    const rows = [['时间', ...fields.map(field => field.unit ? `${field.model}/${field.device}/${field.name} (ID ${field.id}) [${field.unit}]` : field.name)]];
+    const maskBytes = Math.ceil(count / 8), recordBytes = 32 + maskBytes + count * 8;
+    let missing = 0, emptyRecords = 0, endRecord = null;
+    while (position < data.length) {
+      const rowNumber = rows.length;
+      // Completed captures may end with END1: length, uint64 sample count,
+      // int64 end time (ns), and CRC32 of the entire SMP1 byte region.
+      // It is a trailer, not an additional sample. Check it before the row limit.
+      if (signature(position, 'END1')) {
+        if (position + 8 > data.length) throw new Error('PMSD END1 结束块不完整，文件可能被截断。');
+        const length = view.getUint32(position + 4, true);
+        if (length !== 28) throw new Error('PMSD END1 结束块长度无效，当前支持 28 字节结构。');
+        if (position + length > data.length) throw new Error('PMSD END1 结束块不完整，文件可能被截断。');
+        if (position + length !== data.length) throw new Error('PMSD END1 结束块后仍有多余数据，未载入文件。');
+        if (view.getBigUint64(position + 8, true) !== BigInt(rows.length - 1)) throw new Error('PMSD END1 结束块的采样计数与实际记录数不一致。');
+        if (pmsdCRC(data, headerEnd, position) !== view.getUint32(position + 24, true)) throw new Error('PMSD END1 结束块的采样区校验失败，文件可能损坏。');
+        endRecord = { records: rows.length - 1, time: pmsdTime(Number(view.getBigInt64(position + 16, true) / 1000000n), zone) };
+        position += length; break;
+      }
+      if (rowNumber > 250000) throw new Error('最多支持 250,000 行数据，请拆分文件。');
+      if (position + 8 > data.length || !signature(position, 'SMP1')) throw new Error(`PMSD 第 ${rowNumber} 条记录不完整或类型不支持。`);
+      const length = view.getUint32(position + 4, true);
+      if (length !== recordBytes || position + length > data.length) throw new Error(`PMSD 第 ${rowNumber} 条记录长度无效或文件被截断。`);
+      if (view.getUint32(position + 24, true) !== maskBytes) throw new Error(`PMSD 第 ${rowNumber} 条记录的有效性标记长度无效。`);
+      if (pmsdCRC(data, position + 8, position + length - 4) !== view.getUint32(position + length - 4, true)) throw new Error(`PMSD 第 ${rowNumber} 条记录校验失败，文件可能损坏。`);
+      const ms = Number(view.getBigInt64(position + 16, true) / 1000000n);
+      const row = [pmsdTime(ms, zone)], valuesStart = position + 28 + maskBytes;
+      let valid = 0;
+      for (let column = 0; column < count; column++) {
+        const present = data[position + 28 + (column >> 3)] & (1 << (column & 7));
+        const value = view.getFloat64(valuesStart + column * 8, true);
+        if (present && Number.isFinite(value)) { row.push(value); valid++; }
+        else { row.push(null); missing++; }
+      }
+      if (!valid) emptyRecords++;
+      rows.push(row); position += length;
+    }
+    const workbook = tableWorkbook(rows);
+    const offset = zone.offset, sign = offset < 0 ? '−' : '+';
+    const timeZone = offset === null ? '浏览器本地时区' : `UTC${sign}${String(Math.floor(Math.abs(offset) / 60)).padStart(2, '0')}:${String(Math.abs(offset) % 60).padStart(2, '0')}`;
+    workbook.ImportInfo = { format: 'PMSD', version: 2, timeZone, timeZoneSource: zone.source, records: rows.length - 1, missing, emptyRecords, endRecord };
+    return workbook;
+  }
+  const EXCEL_EXTENSIONS = ['xlsx', 'xls', 'xlsm', 'xlsb', 'xltx', 'xltm', 'xlt', 'xlw', 'xml'];
+  const DATA_EXTENSIONS = ['csv', 'json', 'txt', 'pmsd', ...EXCEL_EXTENSIONS];
+  function supportsDataFile(filename) { return DATA_EXTENSIONS.includes(/\.([^.]+)$/.exec(filename)?.[1].toLowerCase()); }
+  async function readExcelFile(bytes) {
+    const data = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes);
+    if (data.length > 50 * 1024 * 1024) throw new Error('文件超过 50 MB，请拆分数据。');
+    if (data.length < 4) throw new Error('Excel 文件为空或不完整。');
+    const signature = Array.from(data.subarray(0, 8)).map(byte => byte.toString(16).padStart(2, '0')).join('');
+    const zipped = signature.startsWith('504b0304'), compound = signature === 'd0cf11e0a1b11ae1';
+    const biff = [0x0009, 0x0209, 0x0409, 0x0809].includes(data[0] | (data[1] << 8));
+    let payload = data, type = 'array';
+    if (zipped) {
+      const Zip = root.JSZip || (typeof module === 'object' && module.exports ? require('../vendor/jszip.min.js') : null);
+      if (!Zip) throw new Error('Excel 解压组件未能加载，请重新打开完整 HTML。');
+      let zip;
+      try { zip = await Zip.loadAsync(data); } catch { throw new Error('Excel 压缩结构损坏或文件不完整。'); }
+      const entries = Object.values(zip.files);
+      if (entries.length > 10000) throw new Error('工作簿包含过多文件，请拆分数据。');
+      const expandedSize = entries.reduce((sum, entry) => sum + (entry._data?.uncompressedSize || 0), 0);
+      if (expandedSize > 200 * 1024 * 1024) throw new Error('工作簿解压后超过 200 MB，请拆分数据。');
+      if (!zip.file('xl/workbook.xml') && !zip.file('xl/workbook.bin')) throw new Error('压缩文件中没有 Excel 工作簿，请上传原始 Excel 文件。');
+    } else if (!compound && !biff) {
+      let text;
+      try { text = decodeText(data); } catch { throw new Error('不是可识别的 Excel 工作簿，文件可能损坏。'); }
+      const spreadsheetML = /<(?:[\w.-]+:)?Workbook\b/i.test(text) && /urn:schemas-microsoft-com:office:spreadsheet/i.test(text);
+      if (!spreadsheetML) throw new Error('不是可识别的 Excel 工作簿；文本表格请使用 CSV 或 TXT 扩展名，XML 需为 Excel 2003 XML 格式。');
+      payload = text; type = 'string';
+    }
+    const Excel = root.XLSX || (typeof module === 'object' && module.exports ? require('../vendor/xlsx.full.min.js') : null);
+    if (!Excel?.read) throw new Error('Excel 解析组件未能加载，请重新打开完整 HTML。');
+    let workbook;
+    try {
+      workbook = Excel.read(payload, { type, cellDates: false, cellNF: true, cellText: false, cellHTML: false, cellFormula: false, bookVBA: false, bookDeps: false, dense: false, sheetRows: 250002 });
+    } catch (error) {
+      if (/password|encrypt|filepass/i.test(error.message || '')) throw new Error('Excel 文件已加密，请另存为不带打开密码的副本后上传。');
+      throw new Error('Excel 文件解析失败，请确认文件完整，并尝试用 Excel 另存后重新上传。');
+    }
+    if (!workbook.SheetNames?.length) throw new Error('Excel 文件中没有可读取的工作表。');
+    for (const name of workbook.SheetNames) {
+      const sheet = workbook.Sheets[name];
+      // Retain the true dimensions so readSheet rejects oversized tables instead of plotting a truncated prefix.
+      if (sheet?.['!fullref']) sheet['!ref'] = sheet['!fullref'];
+    }
+    workbook.ImportInfo = { format: 'Excel' };
+    return workbook;
+  }
+  function readDataFile(bytes, filename) {
+    const extension = /\.([^.]+)$/.exec(filename)?.[1].toLowerCase();
+    if (!supportsDataFile(filename)) throw new Error('支持 Excel、CSV、JSON、TXT、PMSD 文件，请选择支持的扩展名。');
+    if (EXCEL_EXTENSIONS.includes(extension)) return readExcelFile(bytes);
+    if (extension === 'pmsd') return readPMSD(bytes, filename);
+    let text = decodeText(bytes);
+    if (!text.trim()) throw new Error('文件为空，请选择包含表格数据的文件。');
+    if (extension === 'json') {
+      let value;
+      try { value = JSON.parse(text); } catch { throw new Error('JSON 格式无效，请检查逗号、引号和括号。'); }
+      return tableWorkbook(jsonTable(value));
+    }
+    let delimiter;
+    const separator = /^sep=([,;\t])\r?\n/i.exec(text);
+    if (separator) { delimiter = separator[1]; text = text.slice(separator[0].length); }
+    return tableWorkbook(parseCSV(text, delimiter, { rows: 250001, columns: 512 }));
+  }
+  function writeCSV(workbook, sheetName = workbook.SheetNames[0]) {
+    const rows = sheet_to_json(workbook.Sheets[sheetName]);
+    const field = value => { const text = String(value ?? ''); return /[",\r\n]/.test(text) ? '"' + text.replace(/"/g, '""') + '"' : text; };
+    return '\uFEFF' + rows.map(row => row.map(field).join(',')).join('\r\n') + '\r\n';
+  }
+  async function read(bytes) {
+    const data = new Uint8Array(bytes);
+    if (data[0] === 0xd0 && data[1] === 0xcf) throw new Error('旧版 .xls 或加密工作簿暂不支持，请另存为未加密的 .xlsx 后导入。');
+    if (data[0] !== 0x50 || data[1] !== 0x4b) {
+      let text;
+      if (data[0] === 0xff && data[1] === 0xfe) text = new TextDecoder('utf-16le').decode(data);
+      else { text = new TextDecoder('utf-8').decode(data); if (text.includes('\uFFFD')) text = new TextDecoder('gb18030').decode(data); }
+      if (/^\s*</.test(text)) throw new Error('请将此文件另存为 .xlsx 或 CSV 格式。');
+      const wb = utils.book_new(); utils.book_append_sheet(wb, aoa_to_sheet(parseCSV(text)), '数据'); return wb;
+    }
+    const zip = await root.JSZip.loadAsync(data);
+    const zipEntries = Object.values(zip.files);
+    let size = 0;
+    for (const entry of zipEntries) { size += entry._data?.uncompressedSize || 0; if (size > 200 * 1024 * 1024) throw new Error('工作簿解压后超过 200 MB，请拆分数据。'); }
+    if (zipEntries.length > 10000) throw new Error('工作簿包含过多文件，请拆分数据。');
+    async function get(file, required = false) {
+      const entry = zip.file(file);
+      if (!entry) { if (required) throw new Error('不是有效的 .xlsx 工作簿，缺少 ' + file); return null; }
+      const value = await entry.async('string'); return xml(value);
+    }
+    const book = await get('xl/workbook.xml', true), rels = await get('xl/_rels/workbook.xml.rels', true);
+    const relationships = new Map(elements(rels, 'Relationship').filter(r => r.getAttribute('TargetMode') !== 'External').map(r => [r.getAttribute('Id'), normalizePath('xl/', r.getAttribute('Target'))]));
+    const sharedPath = elements(rels, 'Relationship').find(r => /\/sharedStrings$/.test(r.getAttribute('Type')))?.getAttribute('Target');
+    const sharedDoc = await get(sharedPath ? normalizePath('xl/', sharedPath) : 'xl/sharedStrings.xml');
+    const strings = sharedDoc ? elements(sharedDoc, 'si').map(textRuns) : [];
+    const styleDoc = await get('xl/styles.xml');
+    const formats = new Map([[14, 'yyyy-mm-dd'], [15, 'd-mmm-yy'], [16, 'd-mmm'], [17, 'mmm-yy'], [18, 'h:mm AM/PM'], [19, 'h:mm:ss AM/PM'], [20, 'h:mm'], [21, 'h:mm:ss'], [22, 'yyyy-mm-dd h:mm'], [45, 'mm:ss'], [46, '[h]:mm:ss'], [47, 'mmss.0']]);
+    for (let id = 27; id <= 36; id++) formats.set(id, 'yyyy-mm-dd');
+    for (let id = 50; id <= 58; id++) formats.set(id, 'yyyy-mm-dd');
+    const styles = [];
+    if (styleDoc) {
+      elements(styleDoc, 'numFmt').forEach(f => formats.set(+f.getAttribute('numFmtId'), f.getAttribute('formatCode')));
+      const xfs = elements(styleDoc, 'cellXfs')[0]; if (xfs) elements(xfs, 'xf').forEach(xf => styles.push(formats.get(+xf.getAttribute('numFmtId')) || 'General'));
+    }
+    const date1904 = ['1', 'true'].includes(elements(book, 'workbookPr')[0]?.getAttribute('date1904'));
+    const wb = { SheetNames: [], Sheets: {}, Workbook: { WBProps: { date1904 } } };
+    for (const spec of elements(book, 'sheet')) {
+      const name = spec.getAttribute('name'), id = spec.getAttribute('r:id') || spec.getAttributeNS('http://schemas.openxmlformats.org/officeDocument/2006/relationships', 'id');
+      const target = relationships.get(id);
+      if (!target || !/worksheets\//.test(target)) continue;
+      const doc = await get(target, true), sheet = {}; let maxR = 0, maxC = 0, any = false;
+      for (const cell of elements(doc, 'c')) {
+        const ref = cell.getAttribute('r'); if (!ref) continue;
+        const pos = decode_cell(ref);
+        if (pos.r > 250000 || pos.c > 511) throw new Error('工作表超出 250,000 行或 512 列，请先缩小数据范围。');
+        const type = cell.getAttribute('t') || 'n'; const raw = elements(cell, 'v')[0]?.textContent;
+        let value = null, t = type;
+        if (type === 'inlineStr') { value = textRuns(cell); t = 's'; }
+        else if (type === 's') { value = strings[+raw] ?? ''; t = 's'; }
+        else if (type === 'b') value = raw === '1';
+        else if (type === 'str' || type === 'e' || type === 'd') { value = raw ?? null; if (type === 'd') t = 's'; }
+        else if (raw !== undefined && raw !== '') { value = Number(raw); if (!Number.isFinite(value)) value = null; }
+        if (value === null) continue;
+        sheet[ref] = { v: value, t, z: styles[+(cell.getAttribute('s') || 0)] || 'General' };
+        maxR = Math.max(maxR, pos.r); maxC = Math.max(maxC, pos.c); any = true;
+      }
+      if (any) sheet['!ref'] = 'A1:' + encode_cell({ r: maxR, c: maxC });
+      utils.book_append_sheet(wb, sheet, name);
+    }
+    return wb;
+  }
+  const esc = value => String(value).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' })[c]);
+  async function write(wb) {
+    const zip = new root.JSZip(), ns = 'http://schemas.openxmlformats.org/spreadsheetml/2006/main';
+    zip.file('[Content_Types].xml', `<?xml version="1.0"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>${wb.SheetNames.map((_, i) => `<Override PartName="/xl/worksheets/sheet${i + 1}.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>`).join('')}</Types>`);
+    zip.file('_rels/.rels', '<?xml version="1.0"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>');
+    zip.file('xl/workbook.xml', `<?xml version="1.0"?><workbook xmlns="${ns}" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets>${wb.SheetNames.map((n, i) => `<sheet name="${esc(n)}" sheetId="${i + 1}" r:id="rId${i + 1}"/>`).join('')}</sheets></workbook>`);
+    zip.file('xl/_rels/workbook.xml.rels', `<?xml version="1.0"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${wb.SheetNames.map((_, i) => `<Relationship Id="rId${i + 1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet${i + 1}.xml"/>`).join('')}</Relationships>`);
+    wb.SheetNames.forEach((name, i) => {
+      const sheet = wb.Sheets[name], rows = sheet_to_json(sheet);
+      const content = rows.map((row, r) => `<row r="${r + 1}">${row.map((v, c) => v == null ? '' : typeof v === 'number' ? `<c r="${encode_cell({ r, c })}"><v>${v}</v></c>` : `<c r="${encode_cell({ r, c })}" t="inlineStr"><is><t xml:space="preserve">${esc(v)}</t></is></c>`).join('')}</row>`).join('');
+      zip.file(`xl/worksheets/sheet${i + 1}.xml`, `<?xml version="1.0"?><worksheet xmlns="${ns}"><sheetData>${content}</sheetData></worksheet>`);
+    });
+    return zip.generateAsync({ type: 'uint8array', compression: 'DEFLATE' });
+  }
+  return { utils, SSF, DATA_EXTENSIONS, EXCEL_EXTENSIONS, supportsDataFile, read, write, parseCSV, readPasted, readDataFile, writeCSV };
+});
+</script><script>/* Curve Viewer — data and configuration helpers. */
+(function (root, factory) {
+  const api = factory();
+  if (typeof module === 'object' && module.exports) {
+    api.configureDefaults(Object.fromEntries(api.CONFIG_TYPES.map(type => [type, require('../configs/' + type + '.json').defaults])));
+    module.exports = api;
+  }
+  else root.CurveCore = api;
+})(typeof globalThis !== 'undefined' ? globalThis : this, function () {
+  'use strict';
+  const AXIS_IDS = ['small', 'thermal', 'medium', 'large', 'auto'];
+  const PALETTE = [], RANGES = [], AXIS_GROUPS = [];
+  let defaults = null, DEFAULT_HEADER_RULE;
+  function requireDefaults() {
+    if (!defaults) throw new Error('默认配置尚未载入，请检查网站 configs 中的三个 JSON 文件并刷新云端配置。');
+    return defaults;
+  }
+  function getDefaults(type) {
+    const value = requireDefaults();
+    return JSON.parse(JSON.stringify(type ? value[type] : value));
+  }
+  function numeric(value) {
+    if (typeof value === 'number') return Number.isFinite(value) ? value : null;
+    if (typeof value !== 'string' || !value.trim()) return null;
+    const s = value.trim();
+    if (!/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:e[+-]?\d+)?$/i.test(s)) return null;
+    const n = Number(s);
+    return Number.isFinite(n) ? n : null;
+  }
+  function rangeFor(min, max) {
+    return RANGES.find(range => min >= range.min && max <= range.max) || null;
+  }
+  function colorAt(index) {
+    const color = requireDefaults().selection.fallbackColor;
+    return PALETTE[index] || `hsl(${Math.round(index * color.hueStep % 360)}, ${color.saturation}%, ${color.lightness}%)`;
+  }
+  function keyOf(name, occurrence = 1) { return JSON.stringify([name, occurrence]); }
+  function validateHeaderRule(value = DEFAULT_HEADER_RULE) {
+    if (!value || typeof value !== 'object' || Array.isArray(value) || typeof value.enabled !== 'boolean' || typeof value.pattern !== 'string' || !value.pattern || value.pattern.length > 1000 || typeof value.flags !== 'string' || !/^[gimsu]*$/.test(value.flags) || typeof value.replacement !== 'string' || value.replacement.length > 1000) throw new Error('标题规则需要启用状态、1～1000 字符的正则、g/i/m/s/u 标志及替换文本。');
+    try { new RegExp(value.pattern, value.flags); } catch (error) { throw new Error(`正则表达式无效：${error.message}`); }
+    return { enabled: value.enabled, pattern: value.pattern, flags: value.flags, replacement: value.replacement };
+  }
+  function createHeaderFormatter(value = DEFAULT_HEADER_RULE) {
+    const rule = validateHeaderRule(value), regex = new RegExp(rule.pattern, rule.flags);
+    return value => {
+      const text = String(value ?? '').trim();
+      if (!rule.enabled) return text;
+      regex.lastIndex = 0;
+      return text.replace(regex, rule.replacement).trim() || text;
+    };
+  }
+  function normalizeHeader(value, rule = DEFAULT_HEADER_RULE) { return createHeaderFormatter(rule)(value); }
+  function renameHeaders(data, rule) {
+    const format = createHeaderFormatter(rule), occurrences = new Map();
+    const series = data.series.map(s => {
+      const name = format(s.sourceName), occurrence = (occurrences.get(name) || 0) + 1;
+      occurrences.set(name, occurrence);
+      return { ...s, name, occurrence, key: keyOf(name, occurrence), label: name + (occurrence > 1 ? ` (${occurrence})` : '') };
+    });
+    return { ...data, series, timeName: format(data.sourceTimeName) };
+  }
+  function parseTextTime(value) {
+    if (value instanceof Date) return Number.isFinite(value.getTime()) ? value.getTime() : null;
+    if (typeof value !== 'string') return null;
+    const s = value.trim();
+    const clock = /^(\d{1,3}):(\d{2})(?::(\d{2})(?:\.(\d{1,3}))?)?$/.exec(s);
+    if (clock) {
+      const [, h, m, sec = '0', ms = '0'] = clock;
+      if (+m > 59 || +sec > 59) return null;
+      return ((+h * 60 + +m) * 60 + +sec) * 1000 + +ms.padEnd(3, '0');
+    }
+    const date = /^(\d{4})[-/年](\d{1,2})[-/月](\d{1,2})日?(?:[ T](\d{1,2}):(\d{2})(?::(\d{2})(?:\.(\d{1,3}))?)?)?$/.exec(s);
+    if (date) {
+      const [, y, mo, d, h = '0', m = '0', sec = '0', ms = '0'] = date;
+      if (+mo < 1 || +mo > 12 || +d < 1 || +h > 23 || +m > 59 || +sec > 59) return null;
+      const t = Date.UTC(+y, +mo - 1, +d, +h, +m, +sec, +ms.padEnd(3, '0'));
+      const check = new Date(t);
+      return check.getUTCMonth() === +mo - 1 && check.getUTCDate() === +d ? t : null;
+    }
+    if (/^\d{4}-\d{2}-\d{2}T.*(?:Z|[+-]\d{2}:?\d{2})$/i.test(s)) {
+      const t = Date.parse(s); return Number.isFinite(t) ? t : null;
+    }
+    return null;
+  }
+  function excelTime(value, XLSX, date1904) {
+    const n = numeric(value);
+    if (n === null) return parseTextTime(value);
+    const d = XLSX.SSF.parse_date_code(n, { date1904 });
+    if (!d) return null;
+    return Date.UTC(d.y, d.m - 1, d.d, d.H, d.M, d.S, Math.round((d.u || 0) * 1000));
+  }
+  function readSheet(workbook, sheetName, XLSX, mode = requireDefaults().axes.timeMode, headerRule = DEFAULT_HEADER_RULE) {
+    requireDefaults();
+    const formatHeader = createHeaderFormatter(headerRule);
+    const sheet = workbook.Sheets[sheetName];
+    if (!sheet || !sheet['!ref']) throw new Error('工作表为空，请选择含有数据的工作表。');
+    const bounds = XLSX.utils.decode_range(sheet['!ref']);
+    if (bounds.e.r > 250000 || bounds.e.c > 511) throw new Error('单张工作表最多支持 250,000 行和 512 列，请先缩小数据范围。');
+    const raw = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: null, raw: true, blankrows: true, range: { s: { r: 0, c: 0 }, e: bounds.e } });
+    if (raw.length < 2 || raw[0].length < 2) throw new Error('需要至少两列：第一列为时间，第二列起为数值序列；第一行填写名称。');
+    const headers = raw[0];
+    const occurrences = new Map(), sourceOccurrences = new Map(), defaultOccurrences = new Map(), defaultFormat = createHeaderFormatter();
+    const series = [];
+    for (let c = 1; c <= bounds.e.c; c++) {
+      if (headers[c] == null && !raw.slice(1).some(row => row[c] != null)) continue;
+      const sourceName = String(headers[c] ?? `序列 ${c}`).trim() || `序列 ${c}`;
+      const name = formatHeader(sourceName);
+      const defaultName = defaultFormat(sourceName), defaultOccurrence = (defaultOccurrences.get(defaultName) || 0) + 1;
+      defaultOccurrences.set(defaultName, defaultOccurrence);
+      const sourceOccurrence = (sourceOccurrences.get(sourceName) || 0) + 1;
+      sourceOccurrences.set(sourceName, sourceOccurrence);
+      const occurrence = (occurrences.get(name) || 0) + 1;
+      occurrences.set(name, occurrence);
+      series.push({ key: keyOf(name, occurrence), name, occurrence, sourceName, sourceOccurrence, defaultName, defaultOccurrence, label: name + (occurrence > 1 ? ` (${occurrence})` : ''), column: c, color: colorAt(series.length), min: Infinity, max: -Infinity, count: 0 });
+    }
+    if (!series.length) throw new Error('没有找到数值序列。');
+    const firstIndex = raw.findIndex((r, i) => i > 0 && r[0] != null && String(r[0]).trim() !== '');
+    if (firstIndex < 0) throw new Error('第一列没有有效时间。');
+    const first = raw[firstIndex][0];
+    const firstCell = sheet[XLSX.utils.encode_cell({ r: firstIndex, c: 0 })];
+    let detected = mode;
+    if (mode === 'auto') {
+      if (firstCell?.z && XLSX.SSF.is_date(firstCell.z) && typeof first === 'number') detected = 'excel';
+      else if (numeric(first) !== null) detected = 'number';
+      else if (parseTextTime(first) !== null) detected = 'date';
+      else detected = 'text';
+    }
+    const date1904 = !!workbook.Workbook?.WBProps?.date1904;
+    const kind = ['excel', 'date', 'unix-s', 'unix-ms'].includes(detected) ? 'time' : detected === 'text' ? 'category' : 'value';
+    const rows = [];
+    let skipped = 0, missing = 0, minX = Infinity, maxX = -Infinity;
+    for (let r = 1; r < raw.length; r++) {
+      const row = raw[r];
+      if (row.every(v => v == null || v === '')) continue;
+      let x = null;
+      if (row[0] != null && String(row[0]).trim() !== '') {
+        if (detected === 'text') x = rows.length;
+        else if (detected === 'excel') x = excelTime(row[0], XLSX, date1904);
+        else if (detected === 'date') x = parseTextTime(row[0]);
+        else { x = numeric(row[0]); if (x !== null && detected === 'unix-s') x *= 1000; }
+      }
+      if (x === null || !Number.isFinite(x) || (kind === 'time' && Math.abs(x) > 8640000000000000)) { skipped++; continue; }
+      const values = series.map(s => {
+        const cell = sheet[XLSX.utils.encode_cell({ r, c: s.column })];
+        const value = cell?.t === 'e' ? null : numeric(row[s.column]);
+        if (value === null) missing++;
+        else { s.min = Math.min(s.min, value); s.max = Math.max(s.max, value); s.count++; }
+        return value;
+      });
+      rows.push({ x, label: firstCell && kind === 'time' ? formatTime(x, false) : String(row[0]), values, sourceRow: r + 1 });
+      minX = Math.min(minX, x); maxX = Math.max(maxX, x);
+    }
+    if (!rows.length) throw new Error('没有可绘制的数据。请检查第一列，或更改时间格式。');
+    if (!series.some(s => s.count)) throw new Error('第二列起没有有效数值。请检查单元格内容。');
+    for (const s of series) { s.range = s.count ? rangeFor(s.min, s.max) : null; if (!s.count) s.min = s.max = null; }
+    const sourceTimeName = String(headers[0] || '时间');
+    return { rows, series, domain: [minX, maxX], kind, detected, skipped, missing, sourceTimeName, timeName: formatHeader(sourceTimeName), sheetName };
+  }
+  function formatNumber(n) {
+    if (n == null || !Number.isFinite(n)) return '—';
+    return new Intl.NumberFormat('zh-CN', { maximumSignificantDigits: 8 }).format(n);
+  }
+  function formatTime(t, short = false) {
+    const d = new Date(t);
+    const clock = d.toISOString().slice(11, 23).replace(/\.000$/, '');
+    if (short || (t >= 0 && t < 86400000)) return clock;
+    return d.toISOString().slice(0, 10) + ' ' + clock;
+  }
+  function dataRange(min, max) {
+    const rule = requireDefaults().axes.autoBounds, factor = rule.paddingPercent / 100, span = max - min;
+    const padding = min === max ? Math.max(rule.minimumConstantPadding, Math.abs(min) * factor) : Number.isFinite(span) ? span * factor : max * factor - min * factor;
+    const lower = Number.isFinite(min - padding) ? min - padding : min, upper = Number.isFinite(max + padding) ? max + padding : max;
+    return { min: rule.roundOutward ? Math.floor(lower) : lower, max: rule.roundOutward ? Math.ceil(upper) : upper };
+  }
+  function validateAxisLimits(value = {}) {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error('坐标范围必须是对象。');
+    const limits = {}, ids = new Set(AXIS_IDS);
+    for (const [id, range] of Object.entries(value)) {
+      if (!ids.has(id)) throw new Error('配置包含未知坐标轴。');
+      if (!range || typeof range !== 'object' || Array.isArray(range) || !Number.isFinite(range.min) || !Number.isFinite(range.max)) throw new Error('坐标上下限必须是有效数字。');
+      if (range.min >= range.max) throw new Error('坐标下限必须小于上限。');
+      if (!Number.isFinite(range.max - range.min)) throw new Error('坐标范围过大，请缩小上下限。');
+      limits[id] = { min: range.min, max: range.max };
+    }
+    return limits;
+  }
+  function axisIdFor(series, assignments = {}) { return assignments[series.key] || series.range?.id || 'auto'; }
+  function validateAxisRegions(value = {}) {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error('坐标区域必须是对象。');
+    const regions = {}, ids = new Set(AXIS_IDS);
+    for (const [id, region] of Object.entries(value)) {
+      if (!ids.has(id)) throw new Error('配置包含未知坐标组。');
+      if (!region || typeof region !== 'object' || Array.isArray(region) || !Number.isFinite(region.start) || !Number.isFinite(region.end)) throw new Error('区域起始、终止比例必须是有效数字。');
+      if (region.start < 0 || region.end > 100 || region.start >= region.end) throw new Error('区域比例须满足 0 ≤ 起始 < 终止 ≤ 100。');
+      regions[id] = { start: region.start, end: region.end };
+    }
+    return regions;
+  }
+  function axisRegionFor(group, regions = {}) { return regions[group.id] || { start: group.band[0] * 100, end: group.band[1] * 100 }; }
+  function axisRegionLabel(group, regions = {}) {
+    const region = axisRegionFor(group, regions);
+    return `${formatNumber(region.start)}%～${formatNumber(region.end)}%`;
+  }
+  function axesFor(series, limits = {}, assignments = {}, regions = {}) {
+    return AXIS_GROUPS.flatMap(group => {
+      const members = series.filter(s => s.count && axisIdFor(s, assignments) === group.id);
+      if (!members.length) return [];
+      const range = limits[group.id] || dataRange(Math.min(...members.map(s => s.min)), Math.max(...members.map(s => s.max)));
+      const region = axisRegionFor(group, regions);
+      return [{ ...group, ...range, band: [region.start / 100, region.end / 100], region: axisRegionLabel(group, regions), groupLabel: group.label, manual: !!limits[group.id], label: `${formatNumber(range.min)} ~ ${formatNumber(range.max)}` }];
+    });
+  }
+  function nearest(rows, x) {
+    let index = -1, distance = Infinity;
+    for (let i = 0; i < rows.length; i++) {
+      const current = Math.abs(rows[i].x - x);
+      if (index < 0 || current < distance) { index = i; distance = current; }
+    }
+    return index;
+  }
+  const TIME_MODES = ['auto', 'excel', 'date', 'number', 'text', 'unix-s', 'unix-ms'];
+  function validateConfig(value) {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error('配置必须是 JSON 对象。');
+    if (value.schema !== 'curve-viewer' || value.version !== 1) throw new Error('不支持的配置格式，需要 curve-viewer v1 配置。');
+    if (typeof value.name !== 'string' || !value.name.trim() || value.name.length > 120) throw new Error('配置名称应为 1～120 个字符。');
+    if (!Array.isArray(value.selectedSeries) || value.selectedSeries.length > 512) throw new Error('selectedSeries 必须是最多 512 项的数组。');
+    const timeMode = value.timeMode || defaults?.axes.timeMode || TIME_MODES[0];
+    if (!TIME_MODES.includes(timeMode)) throw new Error('配置中的时间格式无效。');
+    const keys = new Set();
+    const selectedSeries = value.selectedSeries.map(s => {
+      if (!s || typeof s.name !== 'string' || !s.name || s.name.length > 1000 || !Number.isInteger(s.occurrence) || s.occurrence < 1 || s.occurrence > 512) throw new Error('配置中的序列名称或序号无效。');
+      const key = keyOf(s.name, s.occurrence);
+      if (keys.has(key)) throw new Error('配置中存在重复序列。'); keys.add(key);
+      return { name: s.name, occurrence: s.occurrence, ...(validColor(s.color) ? { color: s.color } : {}) };
+    });
+    const axisLimits = validateAxisLimits(value.axisLimits);
+    const axisRegions = validateAxisRegions(value.axisRegions);
+    const assignments = value.seriesAxes === undefined ? [] : value.seriesAxes;
+    if (!Array.isArray(assignments) || assignments.length > 512) throw new Error('seriesAxes 必须是最多 512 项的数组。');
+    const assignmentKeys = new Set();
+    const seriesAxes = assignments.map(entry => {
+      if (!entry || typeof entry.name !== 'string' || !entry.name || entry.name.length > 1000 || !Number.isInteger(entry.occurrence) || entry.occurrence < 1 || entry.occurrence > 512 || !AXIS_IDS.includes(entry.axisId)) throw new Error('配置中的曲线坐标分配无效。');
+      const key = keyOf(entry.name, entry.occurrence);
+      if (assignmentKeys.has(key)) throw new Error('配置中存在重复的曲线坐标分配。'); assignmentKeys.add(key);
+      return { name: entry.name, occurrence: entry.occurrence, axisId: entry.axisId };
+    });
+    return { schema: 'curve-viewer', version: 1, name: value.name.trim(), timeMode, selectedSeries,
+      ...(Object.keys(axisLimits).length ? { axisLimits } : {}), ...(Object.keys(axisRegions).length ? { axisRegions } : {}), ...(seriesAxes.length ? { seriesAxes } : {}) };
+  }
+  const CONFIG_TYPES = ['axes', 'regex', 'selection'];
+  function validateProfile(value) {
+    if (!value || value.schema !== 'curve-viewer' || value.version !== 2 || !CONFIG_TYPES.includes(value.type)) throw new Error('需要 curve-viewer v2 分类配置。');
+    if (typeof value.name !== 'string' || !value.name.trim() || value.name.length > 120) throw new Error('配置名称应为 1～120 个字符。');
+    const profile = { schema: 'curve-viewer', version: 2, type: value.type, name: value.name.trim() };
+    const fields = { axes: ['timeMode', 'axisLimits', 'axisRegions', 'seriesAxes'], regex: ['headerRule'], selection: ['selectedSeries'] };
+    for (const type of CONFIG_TYPES) if (type !== value.type) for (const field of fields[type]) {
+      if (Object.hasOwn(value, field)) throw new Error(`分类配置不能混入其他类型的字段：${field}`);
+    }
+    if (value.type === 'regex') {
+      if (!value.headerRule) throw new Error('缺少标题正则规则。');
+      return { ...profile, headerRule: validateHeaderRule(value.headerRule) };
+    }
+    const validated = validateConfig({ ...value, version: 1, selectedSeries: value.type === 'selection' ? value.selectedSeries : [] });
+    function identities(entries, originals) {
+      return entries.map((entry, index) => {
+        const original = originals[index];
+        if (original.sourceName === undefined && original.sourceOccurrence === undefined) return entry;
+        if (typeof original.sourceName !== 'string' || !original.sourceName || original.sourceName.length > 1000 || !Number.isInteger(original.sourceOccurrence) || original.sourceOccurrence < 1 || original.sourceOccurrence > 512) throw new Error('配置中的原始列名或序号无效。');
+        return { ...entry, sourceName: original.sourceName, sourceOccurrence: original.sourceOccurrence };
+      });
+    }
+    if (value.type === 'selection') return { ...profile, selectedSeries: identities(validated.selectedSeries, value.selectedSeries) };
+    return { ...profile, timeMode: validated.timeMode, axisLimits: validated.axisLimits || {}, axisRegions: validated.axisRegions || {}, seriesAxes: identities(validated.seriesAxes || [], value.seriesAxes || []) };
+  }
+  function splitConfig(value) {
+    if (value?.version === 2) return [validateProfile(value)];
+    const legacy = validateConfig(value), base = { schema: 'curve-viewer', version: 2, name: legacy.name };
+    return [validateProfile({ ...base, type: 'axes', timeMode: legacy.timeMode, axisLimits: legacy.axisLimits || {}, axisRegions: legacy.axisRegions || {}, seriesAxes: legacy.seriesAxes || [] }), validateProfile({ ...base, type: 'selection', selectedSeries: legacy.selectedSeries })];
+  }
+  function validColor(value) {
+    if (typeof value !== 'string') return false;
+    if (/^#[0-9a-f]{6}$/i.test(value)) return true;
+    const match = /^hsl\((\d+(?:\.\d+)?), (\d+(?:\.\d+)?)%, (\d+(?:\.\d+)?)%\)$/.exec(value);
+    return !!match && +match[1] <= 360 && +match[2] <= 100 && +match[3] <= 100;
+  }
+  function validateDefaults(type, value) {
+    if (!CONFIG_TYPES.includes(type) || !value || typeof value !== 'object' || Array.isArray(value)) throw new Error(`${type}.json 缺少有效的 defaults。`);
+    if (type === 'regex') return { headerRule: validateHeaderRule(value.headerRule || null) };
+    if (type === 'selection') {
+      const selection = validateProfile({ schema: 'curve-viewer', version: 2, type, name: 'defaults', selectedSeries: value.selectedSeries });
+      if (!Array.isArray(value.palette) || !value.palette.length || value.palette.length > 512 || !value.palette.every(validColor)) throw new Error('selection.json 的默认配色 palette 无效。');
+      const color = value.fallbackColor;
+      if (!color || !Number.isFinite(color.hueStep) || color.hueStep <= 0 || color.hueStep > 360 || !Number.isFinite(color.saturation) || color.saturation < 0 || color.saturation > 100 || !Number.isFinite(color.lightness) || color.lightness < 0 || color.lightness > 100) throw new Error('selection.json 的 fallbackColor 无效。');
+      return { selectedSeries: selection.selectedSeries, palette: [...value.palette], fallbackColor: { hueStep: color.hueStep, saturation: color.saturation, lightness: color.lightness } };
+    }
+    if (!TIME_MODES.includes(value.timeMode)) throw new Error('axes.json 的默认时间格式无效。');
+    const axes = validateProfile({ schema: 'curve-viewer', version: 2, type, name: 'defaults', timeMode: value.timeMode, axisLimits: value.axisLimits, axisRegions: value.axisRegions, seriesAxes: value.seriesAxes });
+    if (!AXIS_IDS.every(id => axes.axisRegions[id])) throw new Error('axes.json 的 defaults.axisRegions 必须包含所有坐标组。');
+    if (!Array.isArray(value.axisGroups) || value.axisGroups.length !== AXIS_IDS.length) throw new Error('axes.json 的 defaults.axisGroups 必须包含所有坐标组。');
+    const seen = new Set(), groups = value.axisGroups.map(group => {
+      if (!group || !AXIS_IDS.includes(group.id) || seen.has(group.id) || typeof group.label !== 'string' || !group.label.trim() || group.label.length > 120 || !validColor(group.color)) throw new Error('默认坐标组的标识、名称或颜色无效。');
+      seen.add(group.id);
+      if (group.id !== 'auto' && (!Number.isFinite(group.min) || !Number.isFinite(group.max) || group.min >= group.max)) throw new Error('默认坐标组的范围无效。');
+      return { id: group.id, ...(group.id === 'auto' ? {} : { min: group.min, max: group.max }), label: group.label, color: group.color };
+    });
+    const bounds = value.autoBounds;
+    if (!bounds || !Number.isFinite(bounds.paddingPercent) || bounds.paddingPercent < 0 || bounds.paddingPercent > 100 || !Number.isFinite(bounds.minimumConstantPadding) || bounds.minimumConstantPadding <= 0 || typeof bounds.roundOutward !== 'boolean') throw new Error('axes.json 的默认自动上下限规则无效。');
+    return { timeMode: axes.timeMode, axisLimits: axes.axisLimits, axisRegions: axes.axisRegions, seriesAxes: axes.seriesAxes, axisGroups: groups,
+      autoBounds: { paddingPercent: bounds.paddingPercent, minimumConstantPadding: bounds.minimumConstantPadding, roundOutward: bounds.roundOutward } };
+  }
+  function configureDefaults(value) {
+    const next = Object.fromEntries(CONFIG_TYPES.map(type => [type, validateDefaults(type, value?.[type])]));
+    const groups = next.axes.axisGroups.map(group => ({ ...group, band: [next.axes.axisRegions[group.id].start / 100, next.axes.axisRegions[group.id].end / 100] }));
+    defaults = next; DEFAULT_HEADER_RULE = Object.freeze({ ...next.regex.headerRule });
+    AXIS_GROUPS.splice(0, AXIS_GROUPS.length, ...groups); RANGES.splice(0, RANGES.length, ...groups.filter(g => g.id !== 'auto')); PALETTE.splice(0, PALETTE.length, ...next.selection.palette);
+  }
+  return { RANGES, AXIS_GROUPS, PALETTE, TIME_MODES, CONFIG_TYPES, get DEFAULT_HEADER_RULE() { return DEFAULT_HEADER_RULE; }, get defaultsReady() { return !!defaults; }, requireDefaults, getDefaults, configureDefaults, validateDefaults, validateHeaderRule, createHeaderFormatter, renameHeaders, validateProfile, splitConfig, numeric, rangeFor, keyOf, normalizeHeader, colorAt, parseTextTime, readSheet, axesFor, axisIdFor, axisRegionFor, axisRegionLabel, nearest, formatNumber, formatTime, validateConfig, validateAxisLimits, validateAxisRegions };
+});
+</script><script>/* Canvas time-series renderer, kept local with no remote dependencies. */
+(function () {
+  'use strict';
+  class Plot {
+    constructor(element) {
+      this.element = element; this.handlers = {}; this.zrHandlers = {};
+      this.canvas = document.createElement('canvas'); this.canvas.setAttribute('aria-hidden', 'true');
+      this.element.style.position = 'relative'; this.element.append(this.canvas); this.ctx = this.canvas.getContext('2d');
+      this.controls = document.createElement('div'); this.controls.className = 'zoom-controls'; this.controls.hidden = true;
+      this.startInput = document.createElement('input'); this.endInput = document.createElement('input');
+      [this.startInput, this.endInput].forEach((input, i) => { input.type = 'range'; input.min = 0; input.max = 100; input.step = .1; input.value = i ? 100 : 0; input.setAttribute('aria-label', i ? '结束时间范围' : '开始时间范围'); });
+      const startLabel = document.createElement('label'), endLabel = document.createElement('label'); startLabel.append('起点', this.startInput); endLabel.append('终点', this.endInput); this.controls.append(startLabel, endLabel); this.element.append(this.controls);
+      this.startInput.oninput = () => this.zoom(Math.min(+this.startInput.value, this.end - .1), this.end);
+      this.endInput.oninput = () => this.zoom(this.start, Math.max(+this.endInput.value, this.start + .1));
+      this.canvas.addEventListener('mousemove', e => {
+        if (this.drag && e.buttons === 1) {
+          const delta = (e.offsetX - this.drag.x) / this.plotWidth() * (this.drag.end - this.drag.start);
+          let start = this.drag.start - delta, end = this.drag.end - delta;
+          if (start < 0) { end -= start; start = 0; } if (end > 100) { start -= end - 100; end = 100; }
+          this.zoom(start, end);
+        }
+        this.zrHandlers.mousemove?.({ offsetX: e.offsetX, offsetY: e.offsetY });
+      });
+      this.canvas.addEventListener('mousedown', e => { if (e.button === 0 && !e.ctrlKey && this.containPixel({}, [e.offsetX, e.offsetY])) { this.drag = { x: e.offsetX, start: this.start, end: this.end }; this.canvas.style.cursor = 'grabbing'; } });
+      const endDrag = () => { this.drag = null; this.canvas.style.cursor = 'crosshair'; };
+      window.addEventListener('mouseup', endDrag); this.canvas.addEventListener('mouseleave', endDrag);
+      this.canvas.addEventListener('wheel', e => {
+        if (!e.ctrlKey || !this.containPixel({}, [e.offsetX, e.offsetY])) return;
+        e.preventDefault();
+        const ratio = Math.max(0, Math.min(1, (e.offsetX - this.option.grid.left) / this.plotWidth())), span = this.end - this.start;
+        const newSpan = Math.max(.1, Math.min(100, span * (e.deltaY > 0 ? 1.15 : .87))), center = this.start + ratio * span;
+        let start = Math.max(0, center - ratio * newSpan), end = Math.min(100, start + newSpan); start = Math.max(0, end - newSpan); this.zoom(start, end);
+      }, { passive: false });
+      this.resize();
+    }
+    getZr() { return { on: (name, callback) => { this.zrHandlers[name] = callback; } }; }
+    on(name, callback) { this.handlers[name] = callback; }
+    getWidth() { return this.width; } getHeight() { return this.height; }
+    plotWidth() { return this.width - this.option.grid.left - this.option.grid.right; }
+    resize() {
+      this.width = this.element.clientWidth; this.height = this.element.clientHeight;
+      const dpr = Math.min(window.devicePixelRatio || 1, 3); this.canvas.width = Math.round(this.width * dpr); this.canvas.height = Math.round(this.height * dpr);
+      this.canvas.style.width = `${this.width}px`; this.canvas.style.height = `${this.height}px`; this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0); if (this.option) this.draw();
+    }
+    clear() {
+      this.option = null; this.drag = null; this.controls.hidden = true;
+      this.ctx.clearRect(0, 0, this.width, this.height);
+    }
+    setOption(option) {
+      this.controls.hidden = false;
+      this.option = option; this.start = option.dataZoom[0].start; this.end = option.dataZoom[0].end;
+      // Domain is supplied independently from selected series so empty selections still retain time.
+      this.min = option.domain[0]; this.max = option.domain[1];
+      if (this.min === this.max) { this.min -= .5; this.max += .5; }
+      this.syncInputs(); this.draw();
+    }
+    syncInputs() { this.startInput.value = this.start; this.endInput.value = this.end; }
+    zoom(start, end) { this.start = Math.max(0, Math.min(99.9, start)); this.end = Math.min(100, Math.max(this.start + .1, end)); this.syncInputs(); this.draw(); this.handlers.datazoom?.({ start: this.start, end: this.end }); }
+    dispatchAction(action) { if (this.option && action.type === 'dataZoom') this.zoom(action.start, action.end); }
+    domain() { const span = this.max - this.min; return [this.min + this.start / 100 * span, this.min + this.end / 100 * span]; }
+    convertFromPixel(_, x) { const [lo, hi] = this.domain(); return lo + (x - this.option.grid.left) / this.plotWidth() * (hi - lo); }
+    convertToPixel(_, x) { const [lo, hi] = this.domain(); return this.option.grid.left + (x - lo) / (hi - lo) * this.plotWidth(); }
+    containPixel(_, [x, y]) { if (!this.option) return false; const g = this.option.grid; return x >= g.left && x <= this.width - g.right && y >= g.top && y <= this.height - g.bottom; }
+    axisBounds(axis) {
+      const g = this.option.grid, fullHeight = this.height - g.top - g.bottom, band = axis.band || [0, 1];
+      const height = fullHeight * (band[1] - band[0]);
+      return { top: g.top + fullHeight * band[0], bottom: g.top + fullHeight * band[1], height, ticks: Math.max(1, Math.min(5, Math.floor(height / 24))) };
+    }
+    draw() {
+      const o = this.option, ctx = this.ctx, g = o.grid, top = g.top, bottom = this.height - g.bottom, right = this.width - g.right, height = bottom - top;
+      ctx.clearRect(0, 0, this.width, this.height); ctx.lineWidth = 1; ctx.font = '11px "Segoe UI", "Microsoft YaHei", sans-serif';
+      const line = (x1, y1, x2, y2, color, dashed = false) => { ctx.strokeStyle = color; ctx.setLineDash(dashed ? [3, 4] : []); ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); };
+      const grids = new Set();
+      for (const axis of o.yAxis) {
+        const area = this.axisBounds(axis), key = `${area.top}:${area.bottom}`;
+        if (grids.has(key)) continue; grids.add(key);
+        for (let i = 0; i <= area.ticks; i++) line(g.left, area.top + area.height * i / area.ticks, right, area.top + area.height * i / area.ticks, '#e9edf5', true);
+      }
+      o.yAxis.forEach((axis, index) => {
+        const area = this.axisBounds(axis);
+        const isLeft = index % 2 === 0, x = isLeft ? g.left - axis.offset : right + axis.offset;
+        line(x, area.top, x, area.bottom, '#e0e5ef'); ctx.fillStyle = axis.axisLabel.color;
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(axis.name, x, area.top - 15);
+        ctx.textAlign = isLeft ? 'right' : 'left'; ctx.textBaseline = 'middle';
+        for (let tick = 0; tick <= area.ticks; tick++) { const ratio = tick / area.ticks, value = axis.min * (1 - ratio) + axis.max * ratio; ctx.fillText(CurveCore.formatNumber(value), x + (isLeft ? -9 : 9), area.bottom - area.height * ratio); }
+      });
+      const [lo, hi] = this.domain(), xCount = Math.max(2, Math.floor(this.plotWidth() / (o.xAxis.type === 'time' && hi - lo > 86400000 ? 170 : 100)));
+      ctx.textBaseline = 'top'; ctx.textAlign = 'center'; ctx.fillStyle = '#929caf';
+      for (let i = 0; i <= xCount; i++) {
+        let value = lo + (hi - lo) * i / xCount;
+        if (o.xAxis.type === 'category') value = Math.round(value);
+        const x = this.convertToPixel({}, value); line(x, top, x, bottom, '#f0f2f7', true);
+        const label = o.xAxis.type === 'category' ? o.xAxis.data[value] ?? '' : o.xAxis.type === 'time' ? o.xAxis.axisLabel.formatter(value) : CurveCore.formatNumber(value);
+        ctx.fillText(label.length > 25 ? label.slice(0, 24) + '…' : label, x, bottom + 12, 160);
+      }
+      line(g.left, bottom, right, bottom, '#dfe5ef');
+      ctx.save(); ctx.beginPath(); ctx.rect(g.left, top - 2, this.plotWidth(), height + 4); ctx.clip();
+      for (const series of o.series) {
+        const axis = o.yAxis[series.yAxisIndex], area = this.axisBounds(axis);
+        ctx.save(); ctx.beginPath(); ctx.rect(g.left, area.top, this.plotWidth(), area.height); ctx.clip();
+        ctx.strokeStyle = series.lineStyle.color; ctx.fillStyle = series.lineStyle.color; ctx.lineWidth = series.lineStyle.width; ctx.setLineDash([]); ctx.beginPath();
+        let active = false;
+        for (let i = 0; i < series.data.length; i++) {
+          const [x, y] = series.data[i];
+          if (y === null || !Number.isFinite(y)) { active = false; continue; }
+          // Rows retain source order; later points may return into the visible interval.
+          const px = this.convertToPixel({}, x), py = area.bottom - (y - axis.min) / (axis.max - axis.min) * area.height;
+          if (active) ctx.lineTo(px, py); else ctx.moveTo(px, py); active = true;
+          const isolated = (i === 0 || series.data[i - 1][1] === null) && (i === series.data.length - 1 || series.data[i + 1][1] === null);
+          if (isolated) { ctx.fillRect(px - 2, py - 2, 4, 4); }
+        }
+        ctx.stroke(); ctx.restore();
+      }
+      ctx.restore();
+      // A miniature time overview and the currently visible interval.
+      const previewY = this.height - 39, previewH = 12;
+      ctx.fillStyle = '#f1f4fb'; ctx.fillRect(g.left, previewY, this.plotWidth(), previewH);
+      ctx.fillStyle = '#5465e82a'; ctx.fillRect(g.left + this.start / 100 * this.plotWidth(), previewY, (this.end - this.start) / 100 * this.plotWidth(), previewH);
+      this.controls.style.left = `${g.left}px`; this.controls.style.right = `${g.right}px`;
+    }
+  }
+  window.CurvePlot = { init: element => new Plot(element) };
+})();
+</script><script>/* Local IndexedDB profiles and read-only project configuration bundles. */
+(function (root, factory) {
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('./core.js'));
+  else root.CurveConfigStore = factory(root.CurveCore);
+})(typeof globalThis !== 'undefined' ? globalThis : this, function (C) {
+  'use strict';
+  const DATABASE = 'curve-explorer-configs', MAX_BYTES = 10 * 1024 * 1024;
+  const FILES = Object.freeze({ axes: 'axes.json', regex: 'regex.json', selection: 'selection.json' });
+  const keyOf = config => JSON.stringify([config.type, config.name]);
+  function reference(value) {
+    if (!value || !['local', 'cloud'].includes(value.source) || typeof value.name !== 'string' || !value.name || value.name.length > 120) throw new Error('配置来源或名称无效。');
+    return { source: value.source, name: value.name };
+  }
+  function decodeBundle(text, expectedType) {
+    if (typeof text !== 'string' || new TextEncoder().encode(text).length > MAX_BYTES) throw new Error('配置文件超过 10 MB。');
+    const value = JSON.parse(text.replace(/^\uFEFF/, ''));
+    const document = value?.schema === 'curve-viewer-bundle';
+    if (document && (value.version !== 1 || !C.CONFIG_TYPES.includes(value.type) || !Array.isArray(value.configs) || (expectedType && value.type !== expectedType))) throw new Error('配置文档的版本、分类或 configs 数组无效。');
+    const defaults = document ? C.validateDefaults(value.type, value.defaults) : null;
+    const entries = document ? value.configs : Array.isArray(value) ? value : [value];
+    if (entries.length > 1000) throw new Error('单个配置文件最多支持 1,000 项配置。');
+    const configs = entries.flatMap(C.splitConfig), seen = new Set();
+    for (const config of configs) {
+      const type = expectedType || (document ? value.type : null);
+      if (type && config.type !== type) throw new Error(`${FILES[type]} 只能包含 ${type} 类型的配置。`);
+      const key = keyOf(config);
+      if (seen.has(key)) throw new Error(`同类配置名称重复：${config.name}`);
+      seen.add(key);
+    }
+    return { configs, defaults, type: document ? value.type : expectedType };
+  }
+  function parseBundle(text, expectedType) { return decodeBundle(text, expectedType).configs; }
+  function parseCloudDocument(text, type) {
+    const document = decodeBundle(text, type);
+    if (!document.defaults) throw new Error(`${FILES[type]} 需要包含 defaults 和 configs 的配置文档。`);
+    return document;
+  }
+  function bundle(configs, type) {
+    if (!C.CONFIG_TYPES.includes(type)) throw new Error('配置类型无效。');
+    const profiles = configs.filter(c => c.type === type).map(C.validateProfile);
+    const text = JSON.stringify({ schema: 'curve-viewer-bundle', version: 1, type, defaults: C.getDefaults(type), configs: profiles }, null, 2) + '\n';
+    parseBundle(text, type); return { filename: FILES[type], text };
+  }
+  async function loadCloud(fetcher) {
+    const results = await Promise.all(C.CONFIG_TYPES.map(async type => {
+      const name = FILES[type];
+      const response = await fetcher('./configs/' + name, { cache: 'no-store' });
+      if (!response.ok) throw new Error(`${name} 读取失败（HTTP ${response.status}）。`);
+      try { return parseCloudDocument(await response.text(), type); } catch (error) { throw new Error(`${name}：${error.message}`); }
+    }));
+    return { configs: results.flatMap(document => document.configs), defaults: Object.fromEntries(results.map(document => [document.type, document.defaults])) };
+  }
+  function create(indexedDB, name = DATABASE) {
+    let connection;
+    function open() {
+      if (connection) return connection;
+      connection = new Promise((resolve, reject) => {
+        if (!indexedDB?.open) { reject(new Error('当前浏览器无法使用 IndexedDB。')); return; }
+        let request, failed = false;
+        try { request = indexedDB.open(name, 1); } catch (error) { reject(error); return; }
+        request.onupgradeneeded = () => {
+          const db = request.result;
+          if (!db.objectStoreNames.contains('profiles')) db.createObjectStore('profiles', { keyPath: 'id' });
+          if (!db.objectStoreNames.contains('settings')) db.createObjectStore('settings', { keyPath: 'key' });
+        };
+        request.onerror = () => reject(request.error || new Error('IndexedDB 打开失败。'));
+        request.onblocked = () => { failed = true; reject(new Error('配置数据库正在被其他旧页面占用，请关闭旧页面后重试。')); };
+        request.onsuccess = () => {
+          const db = request.result;
+          if (failed) { db.close(); return; }
+          db.onversionchange = () => { db.close(); connection = null; };
+          db.onclose = () => { connection = null; };
+          resolve(db);
+        };
+      }).catch(error => { connection = null; throw error; });
+      return connection;
+    }
+    async function transaction(mode, action) {
+      const db = await open();
+      return new Promise((resolve, reject) => {
+        let result, tx;
+        try { tx = db.transaction(['profiles', 'settings'], mode); }
+        catch (error) { reject(error); return; }
+        tx.oncomplete = () => { try { resolve(typeof result === 'function' ? result() : result); } catch (error) { reject(error); } };
+        tx.onabort = () => reject(tx.error || new Error('配置写入已取消，未保存。'));
+        tx.onerror = () => { /* The abort event reports the transaction failure. */ };
+        try { result = action(tx.objectStore('profiles'), tx.objectStore('settings'), tx); }
+        catch (error) { tx.abort(); reject(error); }
+      });
+    }
+    async function snapshot() {
+      return transaction('readonly', (profiles, settings) => {
+        const a = profiles.getAll(), b = settings.getAll();
+        return () => {
+          const configs = a.result.sort((x, y) => (x.order || 0) - (y.order || 0)).map(entry => C.validateProfile(entry.config)), last = {};
+          for (const entry of b.result) if (entry.key.startsWith('last.')) last[entry.key.slice(5)] = reference(entry.value);
+          return { configs, last };
+        };
+      });
+    }
+    async function migrate(configs = [], last = {}) {
+      const validated = configs.map(C.validateProfile);
+      return transaction('readwrite', (profiles, settings) => {
+        const marker = settings.get('legacy-migrated');
+        marker.onsuccess = () => {
+          if (marker.result) return;
+          const existing = profiles.getAll();
+          existing.onsuccess = () => {
+            const ids = new Set(existing.result.map(entry => entry.id));
+            let order = Math.max(0, ...existing.result.map(entry => entry.order || 0)) + 1;
+            for (const config of validated) if (!ids.has(keyOf(config))) { ids.add(keyOf(config)); profiles.put({ id: keyOf(config), config, order: order++, updatedAt: Date.now() }); }
+          };
+          for (const type of C.CONFIG_TYPES) if (last[type] && validated.some(c => c.type === type && c.name === last[type])) {
+            const key = 'last.' + type, current = settings.get(key);
+            current.onsuccess = () => { if (!current.result) settings.put({ key, value: { source: 'local', name: last[type] } }); };
+          }
+          settings.put({ key: 'legacy-migrated', value: true });
+        };
+      });
+    }
+    async function putMany(configs, choose = false) {
+      const validated = configs.map(C.validateProfile);
+      return transaction('readwrite', (profiles, settings) => {
+        const existing = profiles.getAll();
+        existing.onsuccess = () => {
+          const entries = new Map(existing.result.map(entry => [entry.id, entry]));
+          let order = Math.max(0, ...existing.result.map(entry => entry.order || 0)) + 1;
+          for (const config of validated) {
+            const id = keyOf(config), entry = { id, config, order: entries.get(id)?.order || order++, updatedAt: Date.now() };
+            profiles.put(entry); entries.set(id, entry);
+            if (choose) settings.put({ key: 'last.' + config.type, value: { source: 'local', name: config.name } });
+          }
+        };
+      });
+    }
+    async function remove(type, name) {
+      if (!C.CONFIG_TYPES.includes(type)) throw new Error('配置类型无效。');
+      return transaction('readwrite', (profiles, settings) => {
+        profiles.delete(keyOf({ type, name }));
+        const key = 'last.' + type, current = settings.get(key);
+        current.onsuccess = () => { if (current.result?.value.source === 'local' && current.result.value.name === name) settings.delete(key); };
+      });
+    }
+    async function select(type, value) {
+      if (!C.CONFIG_TYPES.includes(type)) throw new Error('配置类型无效。');
+      const ref = reference(value);
+      return transaction('readwrite', (profiles, settings, tx) => {
+        if (ref.source === 'local') {
+          const config = profiles.get(keyOf({ type, name: ref.name }));
+          config.onsuccess = () => { if (config.result) settings.put({ key: 'last.' + type, value: ref }); else tx.abort(); };
+        } else settings.put({ key: 'last.' + type, value: ref });
+      });
+    }
+    async function close() { if (connection) { (await connection).close(); connection = null; } }
+    return { open, snapshot, migrate, putMany, remove, select, close };
+  }
+  return { DATABASE, MAX_BYTES, FILES, keyOf, parseBundle, parseCloudDocument, bundle, loadCloud, create };
+});
+</script><script>(function () {
+  'use strict';
+  const C = window.CurveCore;
+  const XLSX = window.SheetReader;
+  const R = window.CurveConfigStore, configStore = R?.create(window.indexedDB);
+  const $ = id => {
+    const element = document.getElementById(id);
+    if (!element) throw new Error(`页面元素 #${id} 不存在`);
+    return element;
+  };
+  const CONFIG_LABELS = { axes: '坐标轴', regex: '标题正则', selection: '勾选序列' };
+  const state = { workbook: null, data: null, selected: new Set(), configs: [], active: null, axisActive: null, regexActive: null, dirty: false, axisDirty: false, regexDirty: false, configType: 'selection', configNames: { axes: '', regex: '', selection: '' }, headerRule: null, filename: '', zoom: [0, 100], axes: [], axisLimits: {}, axisAssignments: {}, axisRegions: {}, busy: false, storageWarning: false };
+  Object.assign(state, { cloudConfigs: [], activeSources: {}, lastChoices: {}, loadingConfigs: true, configBusy: false, storageReady: false, storageError: '', cloudMessage: '正在读取云端配置…' });
+  let configsReady;
+  const activeKey = type => ({ axes: 'axisActive', regex: 'regexActive', selection: 'active' })[type];
+  const dirtyKey = type => ({ axes: 'axisDirty', regex: 'regexDirty', selection: 'dirty' })[type];
+  const hover = { following: false, labels: true, point: null };
+  let hoverPending = false, hoverEpoch = 0, pointer = null;
+  let toastTimer;
+  function notify(message, error = false) {
+    const box = $('toast'); box.textContent = message; box.classList.toggle('error', error); box.hidden = false;
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => { box.hidden = true; }, error ? 9000 : 5000);
+  }
+  function escapeHTML(value) { return String(value).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch]); }
+  function busy(value) {
+    state.busy = value; $('loading').hidden = !(value || state.configBusy); $('clear-data').disabled = value || !state.data;
+    $('axis-region-settings').disabled = $('regex-settings').disabled = value; renderConfigs();
+  }
+  function configBusy(value) { state.configBusy = value; $('loading').hidden = !(state.busy || value); renderConfigs(); }
+  function configLocked() { return state.configBusy || state.loadingConfigs; }
+  function download(blob, filename) {
+    const url = URL.createObjectURL(blob), a = document.createElement('a');
+    a.href = url; a.download = filename; document.body.append(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 30000);
+  }
+  function legacyStore() {
+    const configs = [], last = {};
+    try {
+      const stored = localStorage.getItem('curve-explorer.configs.v2'), legacy = stored === null;
+      const data = JSON.parse((legacy ? localStorage.getItem('curve-explorer.configs.v1') : stored) || '[]');
+      if (Array.isArray(data)) for (const item of data) { try { configs.push(...C.splitConfig(item)); } catch { /* Preserve other valid old profiles. */ } }
+      const oldName = localStorage.getItem('curve-explorer.last-config.v1');
+      Object.assign(last, legacy ? { axes: oldName, selection: oldName } : JSON.parse(localStorage.getItem('curve-explorer.last-config.v2') || '{}'));
+    }
+    catch { /* IndexedDB still works when old localStorage is unavailable. */ }
+    return { configs, last };
+  }
+  function reconcileProfiles(source) {
+    const profiles = source === 'cloud' ? state.cloudConfigs : state.configs;
+    for (const type of C.CONFIG_TYPES) {
+      const active = state[activeKey(type)];
+      if (!active || state.activeSources[type] !== source) continue;
+      const current = profiles.find(c => c.type === type && c.name === active.name);
+      if (!current) { state[activeKey(type)] = null; state.activeSources[type] = null; state[dirtyKey(type)] = false; }
+      else if (JSON.stringify(current) !== JSON.stringify(active)) state[dirtyKey(type)] = true;
+    }
+  }
+  async function reloadLocalProfiles() {
+    const snapshot = await configStore.snapshot(); state.configs = snapshot.configs; state.lastChoices = snapshot.last;
+    state.storageReady = true; state.storageError = ''; reconcileProfiles('local'); return snapshot;
+  }
+  function restoreChoices() {
+    for (const type of C.CONFIG_TYPES) {
+      const ref = state.lastChoices[type];
+      if (!ref) continue;
+      const profiles = ref.source === 'cloud' ? state.cloudConfigs : state.configs;
+      const active = profiles.find(c => c.type === type && c.name === ref.name);
+      if (!active) continue;
+      state[activeKey(type)] = active; state.activeSources[type] = ref.source; state.configNames[type] = active.name;
+    }
+    $('config-name').value = state.configNames[state.configType];
+    if (!C.defaultsReady) return;
+    const axes = state.axisActive || C.getDefaults('axes');
+    $('time-mode').value = $('paste-time-mode').value = axes.timeMode; state.axisLimits = C.validateAxisLimits(axes.axisLimits); state.axisRegions = C.validateAxisRegions(axes.axisRegions);
+    state.headerRule = C.validateHeaderRule(state.regexActive?.headerRule || C.getDefaults('regex').headerRule);
+  }
+  async function refreshCloud(initial = false) {
+    if (!initial) { await configsReady; if (state.busy || configLocked()) return; configBusy(true); }
+    try {
+      const controller = new AbortController(), timer = setTimeout(() => controller.abort(), 8000);
+      let profiles;
+      try { profiles = await R.loadCloud((url, options) => window.fetch(url, { ...options, signal: controller.signal })); }
+      finally { clearTimeout(timer); }
+      C.configureDefaults(profiles.defaults); state.cloudConfigs = profiles.configs; reconcileProfiles('cloud');
+      if (!initial && !state.data) restoreChoices();
+      state.cloudMessage = `已读取默认值及 ${profiles.configs.length} 项云端配置 · 只读`;
+      if (!initial) notify('云端配置已刷新；点击对应配置应用。');
+    } catch (error) { state.cloudMessage = `云端读取失败：${error.message}；已保留原列表。`; if (!initial) notify(state.cloudMessage, true); }
+    finally { if (!initial) configBusy(false); renderConfigs(); }
+  }
+  async function initializeConfigs() {
+    const local = async () => {
+      try { const old = legacyStore(); await configStore.migrate(old.configs, old.last); await reloadLocalProfiles(); }
+      catch (error) { state.storageError = `本地 IndexedDB 不可用：${error.message}`; }
+    };
+    await Promise.all([local(), refreshCloud(true)]);
+    restoreChoices(); state.loadingConfigs = false; renderConfigs();
+  }
+  async function refreshLocal() {
+    await configsReady; if (state.busy || configLocked()) return;
+    try { await reloadLocalProfiles(); renderConfigs(); }
+    catch (error) { state.storageError = `本地配置读取失败：${error.message}`; renderConfigs(); }
+  }
+  const chart = window.CurvePlot?.init($('chart'));
+  if (!chart || !XLSX || !window.JSZip || !R) { notify('组件未能加载，请保留 HTML 同目录下完整的 vendor 文件夹。', true); return; }
+  function activateTab(name, focus = false) {
+    for (const key of ['view', 'paste']) {
+      const selected = key === name, tab = $('tab-' + key);
+      tab.setAttribute('aria-selected', String(selected)); tab.tabIndex = selected ? 0 : -1;
+      $(key + '-panel').hidden = !selected;
+    }
+    cancelHoverMove();
+    if (name !== 'view') hideHover();
+    if (focus) $('tab-' + name).focus();
+    if (name === 'view') requestAnimationFrame(() => { chart.resize(); refreshHover(); });
+  }
+  function setSidebarCollapsed(collapsed) {
+    $('series-sidebar').hidden = collapsed;
+    $('view-panel').classList.toggle('sidebar-collapsed', collapsed);
+    const button = $('toggle-sidebar');
+    button.setAttribute('aria-expanded', String(!collapsed));
+    button.title = collapsed ? '展开序列与配置' : '收起序列与配置'; button.setAttribute('aria-label', button.title);
+    cancelHoverMove();
+    requestAnimationFrame(() => { if (!$('view-panel').hidden) { chart.resize(); refreshHover(); } });
+  }
+  function pasteStatus(message, error = false) {
+    $('paste-status').textContent = message;
+    $('paste-status').classList.toggle('error', error);
+    $('paste-input').setAttribute('aria-invalid', String(error));
+  }
+  function resetPastePreview() {
+    $('paste-preview').hidden = true;
+    $('paste-preview-table').replaceChildren();
+    pasteStatus('粘贴后可先预览，再载入曲线。支持最多 250,000 行数据、512 列。');
+  }
+  function renderPastePreview(workbook) {
+    const sheet = workbook.Sheets['粘贴数据'], bounds = XLSX.utils.decode_range(sheet['!ref']);
+    const rows = XLSX.utils.sheet_to_json(sheet, { range: { s: { r: 0, c: 0 }, e: { r: Math.min(8, bounds.e.r), c: Math.min(7, bounds.e.c) } } });
+    const head = document.createElement('thead'), body = document.createElement('tbody');
+    rows.forEach((row, index) => {
+      const tr = document.createElement('tr');
+      row.forEach(value => { const cell = document.createElement(index ? 'td' : 'th'); cell.textContent = value == null || value === '' ? '—' : index ? String(value) : C.normalizeHeader(value, state.headerRule); if (!index) cell.scope = 'col'; tr.append(cell); });
+      (index ? body : head).append(tr);
+    });
+    $('paste-preview-table').replaceChildren(head, body);
+    $('paste-preview-summary').textContent = `${bounds.e.r.toLocaleString('zh-CN')} 行数据 · ${bounds.e.c + 1} 列（含时间列）· 预览前 8 行、8 列，载入时使用全部数据。`;
+    $('paste-preview').hidden = false;
+  }
+  async function processPaste(load = false) {
+    await configsReady; if (state.busy || configLocked()) return;
+    let stage = '读取表格';
+    busy(true);
+    try {
+      C.requireDefaults();
+      await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      const workbook = XLSX.readPasted($('paste-input').value);
+      stage = '生成预览';
+      renderPastePreview(workbook);
+      if (!load) { pasteStatus('已识别表格。确认列名与数据后，点击“载入曲线”。'); return; }
+      const mode = $('paste-time-mode').value;
+      stage = '载入曲线';
+      replaceData(workbook, '粘贴数据', 'Excel 粘贴数据', false, mode);
+      $('time-mode').value = mode;
+      if (state.axisActive && state.axisActive.timeMode !== mode) { state.axisDirty = true; renderConfigs(); }
+      $('series-search').value = ''; renderSeries();
+      const missing = state.active ? state.active.selectedSeries.filter(s => !findConfigSeries(s)).length : 0;
+      pasteStatus(`已载入 ${state.data.rows.length.toLocaleString('zh-CN')} 个时间点。粘贴内容保留，可修改后再次载入。`);
+      activateTab('view', true);
+      notify(`已载入粘贴数据，共 ${state.data.rows.length} 个时间点。${missing ? ` 当前配置有 ${missing} 条序列未匹配。` : ''}`, missing > 0);
+    } catch (error) {
+      console.error(`[曲线查看：${stage}]`, error);
+      pasteStatus(`${stage}失败：${String(error.message || '请检查表格内容').replace(/[。.]$/, '')}。粘贴内容已保留。`, true);
+    } finally { busy(false); }
+  }
+  function selectedSeries() { return state.data ? state.data.series.filter(s => state.selected.has(s.key)) : []; }
+  function timeText(row, short = false) {
+    if (!row) return '—';
+    return state.data.kind === 'time' ? C.formatTime(row.x, short) : state.data.kind === 'value' ? C.formatNumber(row.x) : row.label;
+  }
+  function matchedSeries() {
+    const q = $('series-search').value.trim().toLocaleLowerCase();
+    return (state.data?.series || []).filter(s => s.label.toLocaleLowerCase().includes(q));
+  }
+  function renderSeries() {
+    const fragment = document.createDocumentFragment(), list = matchedSeries();
+    $('selection-count').textContent = `${state.selected.size} / ${state.data?.series.length || 0}`;
+    for (const id of ['series-search', 'select-all', 'select-none', 'sheet-select', 'time-mode', 'reset-zoom']) $(id).disabled = !state.data;
+    $('clear-data').disabled = state.busy || !state.data;
+    $('series-axis-settings').disabled = !state.data?.series.some(s => s.count);
+    $('axis-region-settings').disabled = state.busy;
+    $('series-count').textContent = $('series-search').value ? `匹配 ${list.length} 条` : `全部 ${list.length} 条`;
+    $('select-all').textContent = $('series-search').value ? '选中匹配' : '全选';
+    $('select-none').textContent = $('series-search').value ? '清空匹配' : '清空';
+    for (const s of list) {
+      const label = document.createElement('label'); label.className = 'series-item';
+      const input = document.createElement('input'); input.type = 'checkbox'; input.checked = state.selected.has(s.key); input.setAttribute('aria-label', s.label);
+      input.addEventListener('change', () => { input.checked ? state.selected.add(s.key) : state.selected.delete(s.key); state.dirty = true; renderSeries(); renderConfigs(); renderChart(); });
+      const content = document.createElement('div'); content.className = 'series-content';
+      const title = document.createElement('div'); title.className = 'series-name';
+      const swatch = document.createElement('span'); swatch.className = 'swatch'; swatch.style.background = s.color;
+      const name = document.createElement('strong'); name.textContent = s.label;
+      const group = C.AXIS_GROUPS.find(g => g.id === C.axisIdFor(s, state.axisAssignments));
+      name.title = s.count ? `${s.label}｜数据 ${C.formatNumber(s.min)} ~ ${C.formatNumber(s.max)}｜坐标组 ${group.label} · ${C.axisRegionLabel(group, state.axisRegions)}` : `${s.label}｜无有效数值`;
+      title.append(swatch, name);
+      const meta = document.createElement('div'); meta.className = 'series-meta';
+      const minmax = document.createElement('span'); minmax.textContent = s.count ? `${C.formatNumber(s.min)} ~ ${C.formatNumber(s.max)}` : '无有效数值';
+      const range = document.createElement('span'); range.className = 'range'; range.textContent = s.count ? group.label : '无坐标轴';
+      meta.append(minmax, range); content.append(title, meta); label.append(input, content); fragment.append(label);
+    }
+    if (!list.length) { const p = document.createElement('p'); p.className = 'empty-list'; p.textContent = state.data ? '没有匹配的序列' : '上传或粘贴数据后，序列将显示在这里。'; fragment.append(p); }
+    $('series-list').replaceChildren(fragment);
+  }
+  function hideHover() { $('hover-card').hidden = $('cursor-line').hidden = $('cursor-label').hidden = true; }
+  function cancelHoverMove() { hoverEpoch++; hoverPending = false; pointer = null; }
+  function clearHover() { cancelHoverMove(); hover.point = null; hideHover(); }
+  function updateHoverStatus() { $('hover-status').textContent = `跟随：${hover.following ? '开' : '关'} · 标签：${hover.labels ? '开' : '关'}`; }
+  function axisPosition(index) { return `${index % 2 === 0 ? '左' : '右'}${Math.floor(index / 2) + 1}`; }
+  let axisEditors = [], resetAllLimits = false, axisAssignmentDraft = {}, regionEditors = [];
+  function clearAxisError() {
+    $('axis-error').textContent = '';
+    for (const editor of axisEditors) for (const input of [editor.min, editor.max]) input.setAttribute('aria-invalid', 'false');
+  }
+  function resetAxisEditor(editor) {
+    editor.min.value = String(editor.automatic.min); editor.max.value = String(editor.automatic.max);
+    editor.manual = false; editor.status.textContent = '自动';
+  }
+  function openAxisSettings(focusId) {
+    if (!state.axes.length) return;
+    const automatic = C.axesFor(selectedSeries(), {}, state.axisAssignments, state.axisRegions), fragment = document.createDocumentFragment();
+    resetAllLimits = false;
+    axisEditors = state.axes.map((axis, index) => {
+      const row = document.createElement('fieldset'); row.className = 'axis-editor';
+      const heading = document.createElement('legend'); heading.style.color = axis.color;
+      const status = document.createElement('span'); status.className = 'axis-mode'; status.textContent = axis.manual ? '手动' : '自动';
+      heading.append(`${axisPosition(index)} · ${axis.groupLabel}组 · ${axis.region}`, status);
+      const names = document.createElement('p'); names.className = 'axis-series';
+      names.textContent = selectedSeries().filter(s => s.count && C.axisIdFor(s, state.axisAssignments) === axis.id).map(s => s.label).join('、'); names.title = names.textContent;
+      const fields = document.createElement('div'); fields.className = 'axis-fields';
+      const editor = { id: axis.id, position: axisPosition(index), automatic: automatic.find(a => a.id === axis.id), manual: !!axis.manual, status };
+      for (const [key, label] of [['min', '下限'], ['max', '上限']]) {
+        const field = document.createElement('label'), input = document.createElement('input');
+        input.id = `axis-${key}-${axis.id}`; input.type = 'number'; input.step = 'any'; input.value = String(axis[key]);
+        input.setAttribute('aria-label', `${editor.position} ${label}`); input.setAttribute('aria-describedby', 'axis-error');
+        input.oninput = () => { editor.manual = true; status.textContent = '手动'; clearAxisError(); };
+        field.append(label, input); fields.append(field); editor[key] = input;
+      }
+      const reset = document.createElement('button'); reset.type = 'button'; reset.textContent = '恢复自动';
+      reset.setAttribute('aria-label', `${editor.position} 恢复自动`);
+      reset.onclick = () => { resetAxisEditor(editor); clearAxisError(); };
+      fields.append(reset); row.append(heading, names, fields); fragment.append(row);
+      return editor;
+    });
+    $('axis-fields').replaceChildren(fragment); clearAxisError();
+    $('axis-dialog').showModal();
+    if (focusId) axisEditors.find(editor => editor.id === focusId)?.min.focus();
+  }
+  function applyAxisSettings(event) {
+    event.preventDefault(); clearAxisError();
+    const limits = resetAllLimits ? {} : { ...state.axisLimits };
+    for (const editor of axisEditors) {
+      if (!editor.manual) { delete limits[editor.id]; continue; }
+      const min = C.numeric(editor.min.value), max = C.numeric(editor.max.value);
+      try { Object.assign(limits, C.validateAxisLimits({ [editor.id]: { min, max } })); }
+      catch (error) {
+        $('axis-error').textContent = `${editor.position}：${error.message}`;
+        editor.min.setAttribute('aria-invalid', 'true'); editor.max.setAttribute('aria-invalid', 'true');
+        (min === null || min >= max ? editor.min : editor.max).focus(); return;
+      }
+    }
+    const changed = [...new Set([...Object.keys(state.axisLimits), ...Object.keys(limits)])].some(id => state.axisLimits[id]?.min !== limits[id]?.min || state.axisLimits[id]?.max !== limits[id]?.max);
+    state.axisLimits = limits; if (changed) state.axisDirty = true;
+    renderChart(); renderConfigs(); $('axis-dialog').close();
+    notify('坐标范围已更新。');
+  }
+  function renderSeriesAxes() {
+    const query = $('series-axis-search').value.trim().toLocaleLowerCase(), fragment = document.createDocumentFragment();
+    const list = (state.data?.series || []).filter(s => s.count && s.label.toLocaleLowerCase().includes(query));
+    for (const s of list) {
+      const row = document.createElement('label'); row.className = 'series-axis-row';
+      const description = document.createElement('span'), name = document.createElement('strong'), status = document.createElement('small');
+      name.textContent = s.label; name.title = s.label; status.textContent = state.selected.has(s.key) ? '已显示' : '未勾选'; description.append(name, status);
+      const select = document.createElement('select'); select.className = 'select-control'; select.setAttribute('aria-label', `${s.label} 坐标系`);
+      const choices = [{ id: '', label: `自动匹配（${s.range?.label || '自动'}组）` }, ...C.AXIS_GROUPS.map(group => ({ id: group.id, label: `${group.label}组 · ${C.axisRegionLabel(group, state.axisRegions)}` }))];
+      select.replaceChildren(...choices.map(choice => Object.assign(document.createElement('option'), { value: choice.id, textContent: choice.label })));
+      select.value = axisAssignmentDraft[s.key] || '';
+      select.onchange = () => { if (select.value) axisAssignmentDraft[s.key] = select.value; else delete axisAssignmentDraft[s.key]; };
+      row.append(description, select); fragment.append(row);
+    }
+    if (!list.length) { const empty = document.createElement('p'); empty.className = 'empty-list'; empty.textContent = '没有匹配的数值序列'; fragment.append(empty); }
+    $('series-axis-list').replaceChildren(fragment);
+  }
+  function openSeriesAxes() {
+    if (!state.data?.series.some(s => s.count)) return;
+    axisAssignmentDraft = { ...state.axisAssignments }; $('series-axis-search').value = '';
+    renderSeriesAxes(); $('series-axis-dialog').showModal();
+  }
+  function applySeriesAxes(event) {
+    event.preventDefault();
+    if (!state.data) return;
+    const keys = new Set([...Object.keys(state.axisAssignments), ...Object.keys(axisAssignmentDraft)]);
+    if ([...keys].some(key => state.axisAssignments[key] !== axisAssignmentDraft[key])) state.axisDirty = true;
+    state.axisAssignments = { ...axisAssignmentDraft };
+    renderSeries(); renderChart(); renderConfigs(); $('series-axis-dialog').close(); notify('曲线坐标系已更新。');
+  }
+  function clearRegionError() {
+    $('axis-region-error').textContent = '';
+    for (const editor of regionEditors) for (const key of ['start', 'end']) editor[key].setAttribute('aria-invalid', 'false');
+  }
+  function resetRegionEditor(editor) {
+    const defaults = C.axisRegionFor(editor.group);
+    editor.start.value = String(defaults.start); editor.end.value = String(defaults.end);
+  }
+  function openAxisRegions() {
+    if (state.busy || configLocked() || !C.defaultsReady) return;
+    const fragment = document.createDocumentFragment();
+    regionEditors = C.AXIS_GROUPS.map(group => {
+      const row = document.createElement('fieldset'); row.className = 'axis-editor';
+      const legend = document.createElement('legend'); legend.textContent = `${group.label}组`;
+      const fields = document.createElement('div'); fields.className = 'axis-fields';
+      const editor = { group }, region = C.axisRegionFor(group, state.axisRegions);
+      for (const [key, label] of [['start', '起始比例 (%)'], ['end', '终止比例 (%)']]) {
+        const field = document.createElement('label'), input = document.createElement('input');
+        input.type = 'number'; input.min = '0'; input.max = '100'; input.step = 'any'; input.value = String(region[key]);
+        input.setAttribute('aria-label', `${group.label}组 ${label}`); input.setAttribute('aria-describedby', 'axis-region-error');
+        input.oninput = clearRegionError; field.append(label, input); fields.append(field); editor[key] = input;
+      }
+      const reset = document.createElement('button'); reset.type = 'button'; reset.textContent = '恢复默认';
+      reset.setAttribute('aria-label', `${group.label}组 恢复默认`);
+      reset.onclick = () => { resetRegionEditor(editor); clearRegionError(); };
+      fields.append(reset); row.append(legend, fields); fragment.append(row); return editor;
+    });
+    $('axis-region-fields').replaceChildren(fragment); clearRegionError(); $('axis-region-dialog').showModal();
+  }
+  function applyAxisRegions(event) {
+    event.preventDefault(); if (state.busy) return; clearRegionError();
+    const regions = {};
+    for (const editor of regionEditors) {
+      const { group } = editor, start = C.numeric(editor.start.value), end = C.numeric(editor.end.value);
+      try { C.validateAxisRegions({ [group.id]: { start, end } }); }
+      catch (error) {
+        $('axis-region-error').textContent = `${group.label}组：${error.message}`;
+        editor.start.setAttribute('aria-invalid', 'true'); editor.end.setAttribute('aria-invalid', 'true');
+        (start === null || start < 0 || start >= end ? editor.start : editor.end).focus(); return;
+      }
+      const defaults = C.axisRegionFor(group);
+      if (start !== defaults.start || end !== defaults.end) regions[group.id] = { start, end };
+    }
+    if (C.AXIS_GROUPS.some(group => {
+      const previous = C.axisRegionFor(group, state.axisRegions), next = C.axisRegionFor(group, regions);
+      return previous.start !== next.start || previous.end !== next.end;
+    })) state.axisDirty = true;
+    state.axisRegions = regions; renderSeries(); renderChart(); renderConfigs(); $('axis-region-dialog').close();
+    notify('坐标区域已应用；保存为坐标轴配置后可在下次加载时复用。');
+  }
+  function renderChart() {
+    cancelHoverMove();
+    if (!state.data) {
+      clearHover();
+      state.axes = []; chart.clear(); $('axis-legend').replaceChildren(); $('axis-legend').hidden = true; $('axis-settings').disabled = true;
+      $('chart-empty').hidden = false;
+      $('chart-empty').textContent = '请上传 Excel、CSV、JSON、TXT、PMSD 文件，或在“粘贴数据”中载入数据';
+      return;
+    }
+    const { data } = state, series = selectedSeries();
+    const axes = C.axesFor(series, state.axisLimits, state.axisAssignments, state.axisRegions); state.axes = axes; $('axis-settings').disabled = !axes.length; $('axis-legend').hidden = !axes.length;
+    const leftCount = Math.ceil(axes.length / 2), rightCount = Math.floor(axes.length / 2);
+    const grid = { top: 32, bottom: 66, left: 58 + Math.max(0, leftCount - 1) * 69, right: 28 + rightCount * 66 };
+    $('chart-empty').hidden = series.length > 0 && axes.length > 0;
+    $('chart-empty').textContent = series.length ? '所选序列没有有效数值' : '勾选左侧序列，开始查看曲线';
+    const legend = document.createDocumentFragment();
+    const caption = document.createElement('span'); caption.className = 'axis-caption'; caption.textContent = '纵轴范围'; legend.append(caption);
+    axes.forEach((a, i) => {
+      const tag = document.createElement('button'); tag.type = 'button'; tag.className = 'axis-tag';
+      tag.title = `${a.groupLabel}组 · ${a.region}；点击调整上下限`; tag.setAttribute('aria-label', `${axisPosition(i)}，${tag.title}，当前 ${a.label}${a.manual ? '，手动' : '，自动'}`);
+      tag.onclick = () => openAxisSettings(a.id);
+      const dot = document.createElement('i'); dot.style.background = a.color;
+      tag.append(dot, document.createTextNode(`${axisPosition(i)} ${a.groupLabel}组：${a.label}${a.manual ? ' · 手动' : ''}`)); legend.append(tag);
+    });
+    $('axis-legend').replaceChildren(legend);
+    const allAxes = axes.length ? axes : [{ ...C.RANGES[0], id: 'empty', band: [0, 1] }];
+    chart.setOption({
+      animation: false, useUTC: true, textStyle: { fontFamily: 'Segoe UI, Microsoft YaHei, sans-serif' },
+      grid, domain: data.domain, tooltip: { show: false },
+      xAxis: { type: data.kind, ...(data.kind === 'category' ? { data: data.rows.map(r => r.label), boundaryGap: false } : { min: 'dataMin', max: 'dataMax' }),
+        axisLine: { lineStyle: { color: '#dfe5ef' } }, axisTick: { show: false }, splitLine: { show: true, lineStyle: { color: '#f1f3f8', type: 'dashed' } },
+        axisLabel: { color: '#929caf', fontSize: 11, margin: 13, hideOverlap: true, ...(data.kind === 'time' ? { formatter: value => C.formatTime(value, data.domain[1] - data.domain[0] < 86400000) } : {}) },
+        axisPointer: { show: false } },
+      yAxis: allAxes.map((a, i) => ({ type: 'value', min: a.min, max: a.max, name: a.label, band: a.band || [0, 1], nameLocation: 'end', nameGap: 18,
+        nameTextStyle: { color: a.color, fontSize: 10 }, position: i % 2 === 0 ? 'left' : 'right', offset: Math.floor(i / 2) * 69, splitNumber: 5,
+        axisLine: { show: true, lineStyle: { color: '#e0e5ef' } }, axisTick: { show: false },
+        axisLabel: { color: a.color, fontSize: 11, formatter: value => C.formatNumber(value) },
+        splitLine: { show: i === 0, lineStyle: { color: '#edf0f6', type: 'dashed' } } })),
+      dataZoom: [
+        { type: 'inside', xAxisIndex: 0, filterMode: 'none', start: state.zoom[0], end: state.zoom[1], zoomOnMouseWheel: 'ctrl', moveOnMouseMove: true },
+        { type: 'slider', xAxisIndex: 0, filterMode: 'none', start: state.zoom[0], end: state.zoom[1], bottom: 20, height: 25, borderColor: '#e5e9f3', backgroundColor: '#f6f8fc', fillerColor: '#5465e81a', dataBackground: { lineStyle: { color: '#bcc5e9' }, areaStyle: { color: '#e4e8f6' } }, selectedDataBackground: { lineStyle: { color: '#8c9ae6' }, areaStyle: { color: '#cdd4f4' } }, handleStyle: { color: '#fff', borderColor: '#b5bfe4' }, moveHandleSize: 0, showDetail: false, brushSelect: false }
+      ],
+      series: series.filter(s => s.count).map(s => {
+        const column = data.series.indexOf(s), axisIndex = axes.findIndex(a => a.id === C.axisIdFor(s, state.axisAssignments));
+        return { id: s.key, name: s.label, type: 'line', yAxisIndex: axisIndex, showSymbol: data.rows.length < 2, symbolSize: 5, connectNulls: false, clip: true,
+          lineStyle: { width: 1.8, color: s.color }, itemStyle: { color: s.color }, emphasis: { disabled: true },
+          data: data.rows.map((row, index) => [data.kind === 'category' ? index : row.x, row.values[column]]) };
+      })
+    }, { notMerge: true });
+    state.plot = grid;
+    refreshHover();
+  }
+  function updateSummary() {
+    const d = state.data;
+    if (!d) {
+      $('chart-subtitle').textContent = '等待上传或粘贴数据';
+      $('time-summary').textContent = '暂无数据';
+      $('data-notice').textContent = ''; $('data-notice').hidden = true;
+      return;
+    }
+    const labels = { excel: 'Excel 日期', date: '日期 / 时间', number: '数值时间', text: '文本顺序', 'unix-s': 'Unix 秒', 'unix-ms': 'Unix 毫秒' };
+    $('chart-subtitle').textContent = `${d.sheetName} · ${d.timeName} · ${labels[d.detected]}`;
+    $('time-summary').textContent = `原始首行 ${timeText(d.rows[0])} · 末行 ${timeText(d.rows.at(-1))} · ${d.rows.length.toLocaleString('zh-CN')} 个时间点`;
+    const warnings = [];
+    if (d.skipped) warnings.push(`${d.skipped} 行因时间为空或无效而跳过`);
+    if (d.missing) warnings.push(`${d.missing} 个空白或非数值单元格按缺失值处理，曲线保留断点`);
+    if (state.workbook?.ImportInfo?.timeZoneSource === 'local') warnings.push('PMSD 文件名未能识别原时区，时间按浏览器本地时区显示');
+    if (d.detected === 'text') warnings.push('时间未转为数值，当前按文本原始顺序等距显示，可手动更改时间格式');
+    $('data-notice').textContent = warnings.join('；'); $('data-notice').hidden = !warnings.length;
+  }
+  function replaceData(workbook, sheet, filename, keepSelection = false, mode = keepSelection ? $('time-mode').value : state.axisActive?.timeMode || $('time-mode').value) {
+    const data = C.readSheet(workbook, sheet, XLSX, mode, state.headerRule); // Parse before changing current state.
+    clearHover();
+    const oldSelection = state.selected;
+    if (!keepSelection) { const axes = state.axisActive || C.getDefaults('axes'); state.axisLimits = C.validateAxisLimits(axes.axisLimits); state.axisRegions = C.validateAxisRegions(axes.axisRegions); state.axisAssignments = {}; state.dirty = false; state.axisDirty = !!state.axisActive && state.axisActive.timeMode !== mode; }
+    state.workbook = workbook; state.data = data; state.filename = filename; state.zoom = [0, 100]; state.lastMode = mode;
+    state.selected = keepSelection ? new Set(data.series.filter(s => oldSelection.has(s.key)).map(s => s.key)) : new Set();
+    $('time-mode').value = mode;
+    $('sheet-select').replaceChildren(...workbook.SheetNames.map(name => Object.assign(document.createElement('option'), { value: name, textContent: name, selected: name === sheet })));
+    $('sheet-select').hidden = workbook.SheetNames.length < 2;
+    if (!keepSelection) { matchConfig(state.active || C.getDefaults('selection'), false); matchAxes(state.axisActive || C.getDefaults('axes')); }
+    updateSummary(); renderSeries(); renderChart(); renderConfigs();
+  }
+  function clearData() {
+    if (state.busy || configLocked()) return;
+    clearHover();
+    state.workbook = state.data = null;
+    state.selected = new Set(); state.axes = []; state.axisLimits = {}; state.axisAssignments = {}; state.axisRegions = {}; state.zoom = [0, 100];
+    state.filename = ''; state.dirty = state.axisDirty = false; state.lastMode = state.axisActive?.timeMode || (C.defaultsReady ? C.getDefaults('axes').timeMode : '');
+    hover.following = false; hover.labels = true;
+    for (const id of ['series-search', 'data-input', 'paste-input']) $(id).value = '';
+    $('config-name').value = state.configNames[state.configType];
+    $('time-mode').value = $('paste-time-mode').value = state.lastMode;
+    $('sheet-select').replaceChildren(); $('sheet-select').hidden = true;
+    $('hover-card').innerHTML = ''; $('cursor-label').textContent = '';
+    axisEditors = []; resetAllLimits = false; $('axis-fields').replaceChildren(); clearAxisError();
+    if ($('axis-dialog').open) $('axis-dialog').close();
+    axisAssignmentDraft = {}; $('series-axis-list').replaceChildren(); $('series-axis-search').value = '';
+    if ($('series-axis-dialog').open) $('series-axis-dialog').close();
+    regionEditors = []; $('axis-region-fields').replaceChildren(); clearRegionError();
+    if ($('axis-region-dialog').open) $('axis-region-dialog').close();
+    if ($('regex-dialog').open) $('regex-dialog').close();
+    resetPastePreview(); updateSummary(); renderSeries(); renderChart(); renderConfigs(); updateHoverStatus();
+    notify('数据已清空。');
+  }
+  async function loadDataFile(file) {
+    await configsReady; if (!file || state.busy || configLocked()) return;
+    if (!XLSX.supportsDataFile(file.name)) { $('data-input').value = ''; return notify('支持 Excel、CSV、JSON、TXT、PMSD 文件，请选择支持的扩展名。', true); }
+    if (file.size > 50 * 1024 * 1024) return notify('文件超过 50 MB，请先减少行数或拆分工作表。', true);
+    busy(true);
+    try {
+      const bytes = await file.arrayBuffer();
+      await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      const workbook = await XLSX.readDataFile(bytes, file.name);
+      if (!workbook.SheetNames.length) throw new Error('文件中没有工作表。');
+      let firstError, loaded = false;
+      for (const sheet of workbook.SheetNames) {
+        try { replaceData(workbook, sheet, file.name, false); loaded = true; break; }
+        catch (error) { firstError ??= error; }
+      }
+      if (!loaded) throw firstError;
+      activateTab('view');
+      const missing = state.active && !state.dirty ? state.active.selectedSeries.length - state.selected.size : 0;
+      const timeZone = workbook.ImportInfo?.timeZone;
+      notify(`已导入 ${file.name}，共 ${state.data.rows.length} 个时间点。${timeZone ? ` 时间：${timeZone}。` : ''}${missing ? ` 当前配置有 ${missing} 条序列未匹配。` : ''}`, missing > 0);
+    } catch (error) {
+      if (error.code === 'DISPLAY_CONFIG') await importConfigs([file]);
+      else { console.error('[曲线查看：文件导入]', error); notify(`导入失败：${error.message || '无法解析此文件'}`, true); }
+    }
+    finally { busy(false); $('data-input').value = ''; }
+  }
+  function renderConfigs() {
+    const type = state.configType, active = state[activeKey(type)], dirty = state[dirtyKey(type)];
+    const configs = state.configs.filter(config => config.type === type);
+    const cloud = state.cloudConfigs.filter(config => config.type === type), locked = state.busy || configLocked();
+    $('config-count').textContent = configs.length + cloud.length;
+    for (const category of C.CONFIG_TYPES) $('config-tab-' + category).setAttribute('aria-pressed', String(category === type));
+    $('config-name').placeholder = `${CONFIG_LABELS[type]}配置名称`;
+    $('save-config').disabled = locked || !state.storageReady || !C.defaultsReady || (type === 'selection' && !state.data);
+    $('save-config').title = `保存到本地 IndexedDB：同类同名更新`;
+    $('config-active').textContent = `当前：${active ? (state.activeSources[type] === 'cloud' ? '云端 · ' : '本地 · ') + active.name : '未选择'}${dirty ? ' · 已修改' : ''}`;
+    $('config-storage-status').textContent = state.loadingConfigs ? '正在读取本地配置…' : state.storageError;
+    $('config-storage-status').hidden = !state.loadingConfigs && !state.storageError;
+    $('cloud-config-status').textContent = state.cloudMessage;
+    for (const id of ['import-config', 'export-configs']) $(id).disabled = locked || !state.storageReady;
+    $('export-configs').disabled ||= !C.defaultsReady;
+    $('axis-region-settings').disabled = $('regex-settings').disabled = locked || !C.defaultsReady;
+    $('refresh-cloud').disabled = locked;
+    $('axis-region-settings').hidden = type !== 'axes';
+    $('regex-settings').hidden = type !== 'regex';
+    function list(profiles, source, target) {
+      const fragment = document.createDocumentFragment();
+      for (const config of profiles) {
+      const chosen = active?.name === config.name && state.activeSources[type] === source;
+      const row = document.createElement('div'); row.className = 'config-row' + (chosen ? ' active' : '');
+      const select = document.createElement('button'); select.className = 'config-choice';
+      select.disabled = locked; select.setAttribute('aria-pressed', chosen ? 'true' : 'false');
+      const name = document.createElement('span'); name.textContent = config.name + (chosen && dirty ? ' · 已修改' : ''); name.title = name.textContent;
+      const count = document.createElement('small'); count.textContent = type === 'selection' ? `${config.selectedSeries.length} 条` : type === 'axes' ? '轴' : config.headerRule.enabled ? '启用' : '停用';
+      select.append(name, count); select.addEventListener('click', () => applyConfig(config, source)); row.append(select);
+      if (source === 'local') {
+        const remove = document.createElement('button'); remove.className = 'remove-config'; remove.textContent = '×'; remove.disabled = locked || !state.storageReady; remove.setAttribute('aria-label', `删除本地配置 ${config.name}`); remove.title = '从本地 IndexedDB 删除此项';
+        remove.addEventListener('click', () => removeLocalConfig(config)); row.append(remove);
+      }
+      fragment.append(row);
+      }
+      if (!profiles.length) { const p = document.createElement('p'); p.className = 'empty-list'; p.textContent = source === 'local' ? `暂无本地${CONFIG_LABELS[type]}配置。` : `暂无云端${CONFIG_LABELS[type]}配置。`; fragment.append(p); }
+      $(target).replaceChildren(fragment);
+    }
+    list(configs, 'local', 'config-list'); list(cloud, 'cloud', 'cloud-config-list');
+  }
+  function switchConfigType(type) {
+    state.configNames[state.configType] = $('config-name').value;
+    state.configType = type; $('config-name').value = state.configNames[type]; renderConfigs();
+  }
+  function findConfigSeries(entry) {
+    if (entry.sourceName !== undefined) {
+      const original = state.data.series.find(s => s.sourceName === entry.sourceName && s.sourceOccurrence === entry.sourceOccurrence);
+      if (original) return original;
+    }
+    const key = C.keyOf(entry.name, entry.occurrence);
+    return state.data.series.find(s => s.key === key) || state.data.series.find(s => s.sourceName === entry.name && s.sourceOccurrence === entry.occurrence) || state.data.series.find(s => s.defaultName === entry.name && s.defaultOccurrence === entry.occurrence);
+  }
+  function matchConfig(config, report = true) {
+    const missing = [], selected = new Set();
+    for (const entry of config.selectedSeries) {
+      const s = findConfigSeries(entry);
+      if (!s) missing.push(entry.name); else { selected.add(s.key); if (entry.color) s.color = entry.color; }
+    }
+    state.selected = selected;
+    if (missing.length && report) notify(`已匹配 ${selected.size} 条序列，${missing.length} 条未在当前工作表找到：${missing.slice(0, 4).join('、')}${missing.length > 4 ? '…' : ''}`, true);
+    return missing;
+  }
+  function matchAxes(config) {
+    state.axisAssignments = {};
+    if (state.data) for (const entry of config.seriesAxes || []) { const s = findConfigSeries(entry); if (s) state.axisAssignments[s.key] = entry.axisId; }
+  }
+  function replaceCurrentHeaders(data) {
+    const old = new Map(state.data.series.map(s => [s.column, { selected: state.selected.has(s.key), axis: state.axisAssignments[s.key], color: s.color }]));
+    const selected = new Set(), assignments = {};
+    for (const s of data.series) {
+      const previous = old.get(s.column);
+      if (previous?.selected) selected.add(s.key);
+      if (previous?.axis) assignments[s.key] = previous.axis;
+      if (previous) s.color = previous.color;
+    }
+    clearHover(); state.data = data; state.selected = selected; state.axisAssignments = assignments;
+  }
+  function applyHeaderRule(rule) {
+    const validated = C.validateHeaderRule(rule);
+    const renamed = state.data ? C.renameHeaders(state.data, validated) : null;
+    if (renamed) replaceCurrentHeaders(renamed);
+    state.headerRule = validated; resetPastePreview();
+  }
+  async function applyConfig(config, source = 'local') {
+    await configsReady; if (state.busy || configLocked()) return;
+    configBusy(true);
+    try {
+      // Validate/reparse before persisting the selection or changing the plot.
+      const data = config.type === 'axes' && state.data && config.timeMode !== state.lastMode ? C.readSheet(state.workbook, state.data.sheetName, XLSX, config.timeMode, state.headerRule) : null;
+      let remembered = false;
+      if (state.storageReady) {
+        try { await configStore.select(config.type, { source, name: config.name }); remembered = true; state.lastChoices[config.type] = { source, name: config.name }; }
+        catch (error) { state.storageError = `无法记住配置选择：${error.message}`; }
+      }
+      let missing = [];
+      if (config.type === 'regex') applyHeaderRule(config.headerRule);
+      else if (config.type === 'axes') {
+        if (data) { replaceCurrentHeaders(data); state.zoom = [0, 100]; }
+        state.axisLimits = C.validateAxisLimits(config.axisLimits); state.axisRegions = C.validateAxisRegions(config.axisRegions);
+        matchAxes(config); $('time-mode').value = $('paste-time-mode').value = config.timeMode; state.lastMode = config.timeMode;
+      } else if (state.data) missing = matchConfig(config);
+      state[activeKey(config.type)] = config; state[dirtyKey(config.type)] = false;
+      state.activeSources[config.type] = source;
+      state.configNames[config.type] = config.name; $('config-name').value = config.name;
+      updateSummary(); renderSeries(); renderChart(); renderConfigs();
+      if (!missing.length) notify(`已${state.data ? '应用' : '选择'}${source === 'cloud' ? '云端' : '本地'}${CONFIG_LABELS[config.type]}配置“${config.name}”。${remembered ? '' : '当前选择未能保存到本地数据库。'}`, !remembered);
+    } catch (error) { notify(`配置未应用：${error.message}`, true); }
+    finally { configBusy(false); }
+  }
+  async function saveLocalConfig() {
+    await configsReady; if (state.busy || configLocked()) return;
+    if (!state.storageReady) return notify('本地 IndexedDB 不可用，配置未保存。', true);
+    if (!C.defaultsReady) return notify('请先成功读取 configs 中的默认配置。', true);
+    const type = state.configType;
+    if (type === 'selection' && !state.data) return notify('请先载入数据，再保存勾选序列配置。', true);
+    const name = $('config-name').value.trim() || `${CONFIG_LABELS[type]}配置 ${state.configs.filter(c => c.type === type).length + 1}`;
+    const identity = s => ({ name: s.name, occurrence: s.occurrence, sourceName: s.sourceName, sourceOccurrence: s.sourceOccurrence });
+    const fields = type === 'regex' ? { headerRule: state.headerRule } : type === 'selection' ? { selectedSeries: selectedSeries().map(s => ({ ...identity(s), color: s.color })) } : { timeMode: $('time-mode').value, axisLimits: state.axisLimits, axisRegions: state.axisRegions,
+      seriesAxes: state.data ? state.data.series.filter(s => state.axisAssignments[s.key]).map(s => ({ ...identity(s), axisId: state.axisAssignments[s.key] })) : state.axisActive?.seriesAxes || [] };
+    let config;
+    try { config = C.validateProfile({ schema: 'curve-viewer', version: 2, type, name, ...fields }); } catch (error) { notify(error.message, true); return; }
+    configBusy(true);
+    try {
+      await configStore.putMany([config], true); await reloadLocalProfiles();
+      state[activeKey(type)] = config; state.activeSources[type] = 'local'; state[dirtyKey(type)] = false; state.configNames[type] = name; $('config-name').value = name;
+      notify(`${CONFIG_LABELS[type]}配置“${name}”已保存到本地 IndexedDB；同类同名项已更新。`);
+    } catch (error) { state.storageError = `本地保存失败：${error.message}`; notify(state.storageError, true); }
+    finally { configBusy(false); }
+  }
+  async function removeLocalConfig(config) {
+    await configsReady; if (state.busy || configLocked() || !state.storageReady) return;
+    if (!state.configs.includes(config)) return;
+    configBusy(true);
+    try { await configStore.remove(config.type, config.name); await reloadLocalProfiles(); notify(`已删除本地配置“${config.name}”。`); }
+    catch (error) { state.storageError = `本地删除失败：${error.message}`; notify(state.storageError, true); }
+    finally { configBusy(false); }
+  }
+  async function exportLocalType() {
+    await configsReady; if (state.busy || configLocked() || !state.storageReady) return;
+    const type = state.configType; configBusy(true);
+    try {
+      await reloadLocalProfiles(); const output = R.bundle(state.configs, type);
+      download(new Blob([output.text], { type: 'application/json;charset=utf-8' }), output.filename);
+      notify(`已导出本地全部 ${CONFIG_LABELS[type]}配置至 ${output.filename}，可手动替换 configs 中的同名文件。`);
+    } catch (error) { notify(`导出失败：${error.message}`, true); }
+    finally { configBusy(false); }
+  }
+  async function importConfigs(files) {
+    await configsReady; if (configLocked()) return;
+    if (!state.storageReady) return notify('本地 IndexedDB 不可用，无法导入本地配置。', true);
+    const jsonFiles = Array.from(files).filter(f => /\.json$/i.test(f.name)).sort((a, b) => a.name.localeCompare(b.name));
+    if (!jsonFiles.length) return notify('没有找到 JSON 配置文件。', true);
+    let count = 0; const errors = []; configBusy(true);
+    try {
+    for (const file of jsonFiles) {
+      try {
+        if (file.size > R.MAX_BYTES) throw new Error('配置文件超过 10 MB');
+        const configs = R.parseBundle(await file.text());
+        await configStore.putMany(configs); count += configs.length;
+      } catch (error) { errors.push(`${file.name}：${error.message}`); }
+    }
+    await reloadLocalProfiles();
+    notify(`已导入 ${count} 个本地配置${errors.length ? `；${errors.length} 个文件失败。${errors[0]}` : '，点击列表中的配置即可应用。'}`, !!errors.length);
+    } catch (error) { state.storageError = `本地配置读取失败：${error.message}`; notify(state.storageError, true); }
+    finally { $('config-input').value = ''; configBusy(false); }
+  }
+  function regexDraft() { return C.validateHeaderRule({ enabled: $('regex-enabled').checked, pattern: $('regex-pattern').value, flags: $('regex-flags').value, replacement: $('regex-replacement').value }); }
+  function previewRegex() {
+    try {
+      const format = C.createHeaderFormatter(regexDraft());
+      $('regex-preview').textContent = $('regex-sample').value.split(/\r?\n/).filter(Boolean).slice(0,12).map(text => `${text} → ${format(text)}`).join('\n') || '输入原始标题即可预览。';
+      $('regex-error').textContent = ''; $('regex-apply').disabled = false;
+    } catch (error) { $('regex-error').textContent = error.message; $('regex-preview').textContent = ''; $('regex-apply').disabled = true; }
+  }
+  function fillRegex(rule) {
+    $('regex-enabled').checked = rule.enabled; $('regex-pattern').value = rule.pattern; $('regex-flags').value = rule.flags; $('regex-replacement').value = rule.replacement; previewRegex();
+  }
+  function openRegex() {
+    if (state.busy || configLocked() || !C.defaultsReady) return;
+    $('regex-sample').value = state.data ? [state.data.sourceTimeName, ...state.data.series.slice(0,5).map(s => s.sourceName)].join('\n') : '';
+    fillRegex(state.headerRule); $('regex-dialog').showModal();
+  }
+  function applyRegex(event) {
+    event.preventDefault(); if (state.busy) return;
+    try {
+      const rule = regexDraft(), changed = JSON.stringify(rule) !== JSON.stringify(state.headerRule);
+      applyHeaderRule(rule); if (changed) state.regexDirty = true;
+      updateSummary(); renderSeries(); renderChart(); renderConfigs(); $('regex-dialog').close();
+      notify('标题规则已应用，保存为标题正则配置后可复用。');
+    } catch (error) { $('regex-error').textContent = error.message; }
+  }
+  function insidePlot(event) {
+    return state.axes.length > 0 && !$('view-panel').hidden && chart.containPixel({ gridIndex: 0 }, [event.offsetX, event.offsetY]);
+  }
+  function captureHover(event) {
+    if (!insidePlot(event)) return;
+    const data = state.data;
+    const x = chart.convertFromPixel({ xAxisIndex: 0 }, event.offsetX);
+    const index = data.kind === 'category' ? Math.max(0, Math.min(data.rows.length - 1, Math.round(x))) : C.nearest(data.rows, x);
+    const { top, bottom } = state.plot;
+    hover.point = { data, index, yRatio: (event.offsetY - top) / Math.max(1, chart.getHeight() - top - bottom) };
+    refreshHover();
+  }
+  function refreshHover() {
+    const point = hover.point;
+    if (!point || point.data !== state.data || !state.axes.length || $('view-panel').hidden) return hideHover();
+    const data = state.data, row = data.rows[point.index];
+    const pixelX = chart.convertToPixel({ xAxisIndex: 0 }, data.kind === 'category' ? point.index : row.x);
+    const { top, bottom, left, right } = state.plot, height = chart.getHeight(), width = chart.getWidth();
+    if (!Number.isFinite(pixelX) || height <= top + bottom || pixelX < left - 1 || pixelX > width - right + 1) return hideHover();
+    const line = $('cursor-line'); line.hidden = false; line.style.cssText = `left:${pixelX}px;top:${top}px;height:${height - top - bottom}px`;
+    const label = $('cursor-label'), card = $('hover-card');
+    label.hidden = card.hidden = !hover.labels;
+    if (!hover.labels) return;
+    label.textContent = timeText(row, true); label.style.left = `${Math.min(width - 95, Math.max(95, pixelX))}px`; label.style.top = `${height - bottom + 2}px`;
+    card.style.maxHeight = `${height - 16}px`;
+    const selected = selectedSeries();
+    card.innerHTML = `<div class="hover-time">${escapeHTML(timeText(row))} <span style="font-weight:400;color:#909aaa">· 第 ${row.sourceRow} 行</span></div>` + selected.map(s => `<div class="hover-row"><span class="swatch" style="background:${s.color}"></span><span class="hover-name">${escapeHTML(s.label)}</span><strong>${C.formatNumber(row.values[data.series.indexOf(s)])}</strong></div>`).join('');
+    // Keep the saved data point anchored when resizing or changing the view.
+    const pixelY = top + point.yRatio * (height - top - bottom);
+    const cardWidth = card.offsetWidth;
+    card.style.left = `${pixelX + cardWidth + 20 < width ? pixelX + 18 : Math.max(8, pixelX - cardWidth - 18)}px`;
+    card.style.top = `${Math.max(6, Math.min(pixelY - 24, height - card.offsetHeight - 8))}px`;
+  }
+  function plotPointer(event) {
+    const rect = $('chart').getBoundingClientRect();
+    return { offsetX: event.clientX - rect.left, offsetY: event.clientY - rect.top };
+  }
+  // Delegate to the wrapper so shortcuts also work over the retained value card.
+  $('plot-wrap').addEventListener('mousemove', event => {
+    const position = plotPointer(event);
+    if (!hover.following || !insidePlot(position)) return;
+    pointer = position;
+    if (!hoverPending) {
+      hoverPending = true; const epoch = hoverEpoch;
+      requestAnimationFrame(() => {
+        if (epoch !== hoverEpoch) return;
+        hoverPending = false;
+        if (hover.following && pointer) captureHover(pointer);
+      });
+    }
+  });
+  $('plot-wrap').addEventListener('click', event => {
+    const position = plotPointer(event);
+    if (!event.ctrlKey || event.button !== 0 || !insidePlot(position)) return;
+    event.preventDefault(); cancelHoverMove(); hover.following = !hover.following;
+    if (hover.following) captureHover(position);
+    updateHoverStatus();
+  });
+  $('plot-wrap').addEventListener('contextmenu', event => {
+    if (!event.ctrlKey || !insidePlot(plotPointer(event))) return;
+    event.preventDefault(); hover.labels = !hover.labels; refreshHover(); updateHoverStatus();
+  });
+  chart.on('datazoom', event => { const z = event.batch?.[0] || event; state.zoom = [z.start ?? state.zoom[0], z.end ?? state.zoom[1]]; cancelHoverMove(); refreshHover(); });
+  new ResizeObserver(() => { if (!$('view-panel').hidden) { chart.resize(); refreshHover(); } }).observe($('chart'));
+  for (const name of ['view', 'paste']) {
+    $('tab-' + name).onclick = () => activateTab(name);
+    $('tab-' + name).onkeydown = event => {
+      if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+      event.preventDefault();
+      activateTab(event.key === 'Home' ? 'view' : event.key === 'End' ? 'paste' : name === 'view' ? 'paste' : 'view', true);
+    };
+  }
+  $('paste-time-mode').replaceChildren(...Array.from($('time-mode').options, option => option.cloneNode(true)));
+  $('paste-input').oninput = resetPastePreview;
+  $('paste-input').onkeydown = event => { if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') { event.preventDefault(); processPaste(true); } };
+  $('paste-clear').onclick = () => { $('paste-input').value = ''; resetPastePreview(); $('paste-input').focus(); };
+  $('paste-preview-button').onclick = () => processPaste(false);
+  $('paste-load').onclick = () => processPaste(true);
+  $('upload-button').onclick = () => $('data-input').click();
+  $('data-input').onchange = e => loadDataFile(e.target.files[0]);
+  $('series-search').oninput = renderSeries;
+  $('select-all').onclick = () => { matchedSeries().forEach(s => state.selected.add(s.key)); state.dirty = true; renderSeries(); renderChart(); renderConfigs(); };
+  $('select-none').onclick = () => { matchedSeries().forEach(s => state.selected.delete(s.key)); state.dirty = true; renderSeries(); renderChart(); renderConfigs(); };
+  $('sheet-select').onchange = () => {
+    if (!state.data) return;
+    const previous = state.data.sheetName;
+    try { replaceData(state.workbook, $('sheet-select').value, state.filename); }
+    catch (error) { $('sheet-select').value = previous; notify(error.message, true); }
+  };
+  $('time-mode').onchange = () => {
+    if (!state.data) return;
+    const previousMode = state.lastMode || 'auto', oldDirty = state.axisDirty;
+    try { state.axisDirty = true; replaceData(state.workbook, state.data.sheetName, state.filename, true); state.lastMode = $('time-mode').value; }
+    catch (error) { $('time-mode').value = previousMode; state.axisDirty = oldDirty; notify(error.message, true); }
+  };
+  $('reset-zoom').onclick = () => { if (!state.data) return; state.zoom = [0, 100]; chart.dispatchAction({ type: 'dataZoom', start: 0, end: 100 }); refreshHover(); };
+  $('clear-data').onclick = clearData;
+  $('toggle-sidebar').onclick = () => setSidebarCollapsed(!$('series-sidebar').hidden);
+  $('series-sidebar').addEventListener('keydown', event => { if (event.key === 'Escape') { setSidebarCollapsed(true); $('toggle-sidebar').focus(); } });
+  $('axis-settings').onclick = () => openAxisSettings();
+  $('series-axis-settings').onclick = openSeriesAxes;
+  $('series-axis-search').oninput = renderSeriesAxes;
+  $('series-axis-form').onsubmit = applySeriesAxes;
+  $('series-axis-cancel').onclick = () => $('series-axis-dialog').close();
+  $('series-axis-reset').onclick = () => { axisAssignmentDraft = {}; renderSeriesAxes(); };
+  $('axis-region-settings').onclick = openAxisRegions;
+  $('axis-region-form').onsubmit = applyAxisRegions;
+  $('axis-region-cancel').onclick = () => $('axis-region-dialog').close();
+  $('axis-region-reset-all').onclick = () => { regionEditors.forEach(resetRegionEditor); clearRegionError(); };
+  $('axis-form').onsubmit = applyAxisSettings;
+  $('axis-cancel').onclick = () => $('axis-dialog').close();
+  $('axis-reset-all').onclick = () => { resetAllLimits = true; axisEditors.forEach(resetAxisEditor); clearAxisError(); };
+  $('save-config').onclick = saveLocalConfig;
+  $('export-configs').onclick = exportLocalType;
+  $('refresh-cloud').onclick = () => refreshCloud();
+  for (const type of C.CONFIG_TYPES) $('config-tab-' + type).onclick = () => switchConfigType(type);
+  $('regex-settings').onclick = openRegex;
+  $('regex-form').onsubmit = applyRegex;
+  $('regex-cancel').onclick = () => $('regex-dialog').close();
+  $('regex-reset').onclick = () => fillRegex(C.DEFAULT_HEADER_RULE);
+  for (const id of ['regex-enabled', 'regex-pattern', 'regex-flags', 'regex-replacement', 'regex-sample']) $(id).oninput = previewRegex;
+  $('config-name').addEventListener('keydown', e => { if (e.key === 'Enter') return saveLocalConfig(); });
+  $('import-config').onclick = () => $('config-input').click();
+  $('config-input').onchange = e => importConfigs(e.target.files);
+  window.addEventListener('focus', refreshLocal);
+  $('help-top').onclick = () => $('help-dialog').showModal();
+  $('close-help').onclick = () => $('help-dialog').close();
+  let dragDepth = 0;
+  window.addEventListener('dragenter', e => { if (!e.dataTransfer?.types.includes('Files')) return; e.preventDefault(); dragDepth++; $('drop-overlay').hidden = false; });
+  window.addEventListener('dragover', e => { if (e.dataTransfer?.types.includes('Files')) e.preventDefault(); });
+  window.addEventListener('dragleave', e => { e.preventDefault(); if (--dragDepth <= 0) { dragDepth = 0; $('drop-overlay').hidden = true; } });
+  window.addEventListener('drop', async e => {
+    e.preventDefault(); dragDepth = 0; $('drop-overlay').hidden = true;
+    const files = Array.from(e.dataTransfer?.files || []);
+    for (const file of files) await loadDataFile(file);
+  });
+  updateSummary(); renderSeries(); renderConfigs(); renderChart(); updateHoverStatus();
+  configsReady = initializeConfigs(); window.CurveAppReady = configsReady;
+  $('sheet-select').hidden = true; setSidebarCollapsed((window.innerWidth || 1280) <= 800);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+{
+  "schema": "curve-viewer-bundle",
+  "version": 1,
+  "type": "selection",
+  "defaults": {
+    "selectedSeries": [],
+    "palette": [
+      "#5465e8",
+      "#16a58e",
+      "#e29533",
+      "#df6680",
+      "#8e65d3",
+      "#2e9dce",
+      "#b08046",
+      "#cf58b3",
+      "#7c992f",
+      "#566c8c"
+    ],
+    "fallbackColor": {
+      "hueStep": 137.508,
+      "saturation": 62,
+      "lightness": 44
+    }
+  },
+  "configs": []
+}
